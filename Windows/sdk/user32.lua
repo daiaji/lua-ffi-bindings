@@ -36,6 +36,25 @@ ffi.cdef[[
     BOOL PostMessageW(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
     
     static const UINT WM_CLOSE = 0x0010;
+
+    /* --- ENHANCEMENTS START --- */
+    
+    /* Keyboard / Hotkeys */
+    /* Maps a character to a virtual key code and shift state */
+    short VkKeyScanW(WCHAR ch);
+    
+    /* Global Hotkeys */
+    BOOL RegisterHotKey(HWND hWnd, int id, UINT fsModifiers, UINT vk);
+    BOOL UnregisterHotKey(HWND hWnd, int id);
+    
+    /* Constants for Modifiers */
+    static const UINT MOD_ALT = 0x0001;
+    static const UINT MOD_CONTROL = 0x0002;
+    static const UINT MOD_SHIFT = 0x0004;
+    static const UINT MOD_WIN = 0x0008;
+    static const UINT MOD_NOREPEAT = 0x4000;
+
+    /* --- ENHANCEMENTS END --- */
 ]]
 
 return ffi.load("user32")

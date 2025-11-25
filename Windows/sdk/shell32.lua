@@ -6,6 +6,83 @@ local kernel32 = require 'ffi.req' 'Windows.sdk.kernel32'
 ffi.cdef[[
     LPWSTR* CommandLineToArgvW(LPCWSTR lpCmdLine, int* pNumArgs);
     LPCWSTR GetCommandLineW(void);
+
+    /* --- ENHANCEMENTS START --- */
+    // Shell File Operations
+    typedef struct _SHFILEOPSTRUCTW {
+        HWND hwnd;
+        UINT wFunc;
+        LPCWSTR pFrom;
+        LPCWSTR pTo;
+        WORD fFlags;
+        BOOL fAnyOperationsAborted;
+        void* hNameMappings;
+        LPCWSTR lpszProgressTitle;
+    } SHFILEOPSTRUCTW;
+
+    int SHFileOperationW(SHFILEOPSTRUCTW* lpFileOp);
+
+    // Browse Folder
+    typedef int (__stdcall *BFFCALLBACK)(HWND, UINT, LPARAM, LPARAM);
+    typedef struct _SHITEMID { WORD cb; BYTE abID[1]; } SHITEMID;
+    typedef struct _ITEMIDLIST { SHITEMID mkid; } ITEMIDLIST;
+    typedef ITEMIDLIST* LPITEMIDLIST; 
+    typedef const ITEMIDLIST* LPCITEMIDLIST;
+    
+    typedef struct _BROWSEINFOW { 
+        HWND hwndOwner; 
+        LPCITEMIDLIST pidlRoot; 
+        LPWSTR pszDisplayName; 
+        LPCWSTR lpszTitle; 
+        UINT ulFlags; 
+        BFFCALLBACK lpfn; 
+        LPARAM lParam; 
+        int iImage; 
+    } BROWSEINFOW;
+
+    LPITEMIDLIST SHBrowseForFolderW(BROWSEINFOW* lpbi);
+    BOOL SHGetPathFromIDListW(LPCITEMIDLIST pidl, LPWSTR pszPath);
+    void CoTaskMemFree(void* pv);
+
+    // COM Interfaces for Shortcuts (IShellLinkW)
+    typedef struct IShellLinkWVtbl {
+        HRESULT (__stdcall *QueryInterface)(void* This, const IID* riid, void** ppvObject);
+        ULONG (__stdcall *AddRef)(void* This);
+        ULONG (__stdcall *Release)(void* This);
+        HRESULT (__stdcall *GetPath)(void* This, LPWSTR pszFile, int cch, void* pfd, DWORD fFlags);
+        HRESULT (__stdcall *GetIDList)(void* This, LPITEMIDLIST* ppidl);
+        HRESULT (__stdcall *SetIDList)(void* This, LPCITEMIDLIST pidl);
+        HRESULT (__stdcall *GetDescription)(void* This, LPWSTR pszName, int cch);
+        HRESULT (__stdcall *SetDescription)(void* This, LPCWSTR pszName);
+        HRESULT (__stdcall *GetWorkingDirectory)(void* This, LPWSTR pszDir, int cch);
+        HRESULT (__stdcall *SetWorkingDirectory)(void* This, LPCWSTR pszDir);
+        HRESULT (__stdcall *GetArguments)(void* This, LPWSTR pszArgs, int cch);
+        HRESULT (__stdcall *SetArguments)(void* This, LPCWSTR pszArgs);
+        HRESULT (__stdcall *GetHotkey)(void* This, WORD* pwHotkey);
+        HRESULT (__stdcall *SetHotkey)(void* This, WORD wHotkey);
+        HRESULT (__stdcall *GetShowCmd)(void* This, int* piShowCmd);
+        HRESULT (__stdcall *SetShowCmd)(void* This, int iShowCmd);
+        HRESULT (__stdcall *GetIconLocation)(void* This, LPWSTR pszIconPath, int cch, int* piIcon);
+        HRESULT (__stdcall *SetIconLocation)(void* This, LPCWSTR pszIconPath, int iIcon);
+        HRESULT (__stdcall *SetRelativePath)(void* This, LPCWSTR pszPathRel, DWORD dwReserved);
+        HRESULT (__stdcall *Resolve)(void* This, HWND hwnd, DWORD fFlags);
+        HRESULT (__stdcall *SetPath)(void* This, LPCWSTR pszFile);
+    } IShellLinkWVtbl;
+    typedef struct { IShellLinkWVtbl* lpVtbl; } IShellLinkW;
+
+    typedef struct IPersistFileVtbl {
+        HRESULT (__stdcall *QueryInterface)(void* This, const IID* riid, void** ppvObject);
+        ULONG (__stdcall *AddRef)(void* This);
+        ULONG (__stdcall *Release)(void* This);
+        HRESULT (__stdcall *GetClassID)(void* This, CLSID* pClassID);
+        HRESULT (__stdcall *IsDirty)(void* This);
+        HRESULT (__stdcall *Load)(void* This, LPCWSTR pszFileName, DWORD dwMode);
+        HRESULT (__stdcall *Save)(void* This, LPCWSTR pszFileName, BOOL fRemember);
+        HRESULT (__stdcall *SaveCompleted)(void* This, LPCWSTR pszFileName);
+        HRESULT (__stdcall *GetCurFile)(void* This, LPWSTR* ppszFileName);
+    } IPersistFileVtbl;
+    typedef struct { IPersistFileVtbl* lpVtbl; } IPersistFile;
+    /* --- ENHANCEMENTS END --- */
 ]]
 
 local lib = ffi.load("shell32")

@@ -176,6 +176,34 @@ int MultiByteToWideChar(unsigned int CodePage, DWORD dwFlags, LPCSTR lpMultiByte
 DWORD GetLastError(void);
 void SetLastError(DWORD dwErrCode);
 DWORD FormatMessageW(DWORD dwFlags, const void* lpSource, DWORD dwMessageId, DWORD dwLanguageId, LPWSTR lpBuffer, DWORD nSize, void* Arguments);
+
+/* --- ENHANCEMENTS START --- */
+
+/* File I/O (Needed for manual file ops if not using lfs) */
+/* Note: OVERLAPPED is usually void* in simple bindings, or struct if async needed */
+BOOL ReadFile(HANDLE hFile, void* lpBuffer, DWORD nNumberOfBytesToRead, DWORD* lpNumberOfBytesRead, void* lpOverlapped);
+BOOL WriteFile(HANDLE hFile, const void* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD* lpNumberOfBytesWritten, void* lpOverlapped);
+BOOL FlushFileBuffers(HANDLE hFile);
+
+/* File Pointer & Size (Needed for win-utils/fs.lua) */
+BOOL GetFileSizeEx(HANDLE hFile, LARGE_INTEGER* lpFileSize);
+BOOL SetFilePointerEx(HANDLE hFile, LARGE_INTEGER liDistanceToMove, LARGE_INTEGER* lpNewFilePointer, DWORD dwMoveMethod);
+
+/* File Attributes (Needed for read-only checks etc.) */
+DWORD GetFileAttributesW(LPCWSTR lpFileName);
+BOOL SetFileAttributesW(LPCWSTR lpFileName, DWORD dwFileAttributes);
+
+/* Drive & Volume Info (Needed for win-utils/disk.lua) */
+DWORD GetLogicalDrives(void);
+UINT GetDriveTypeW(LPCWSTR lpRootPathName);
+BOOL GetVolumeInformationW(LPCWSTR lpRootPathName, LPWSTR lpVolumeNameBuffer, DWORD nVolumeNameSize, DWORD* lpVolumeSerialNumber, DWORD* lpMaximumComponentLength, DWORD* lpFileSystemFlags, LPWSTR lpFileSystemNameBuffer, DWORD nFileSystemNameSize);
+BOOL GetDiskFreeSpaceExW(LPCWSTR lpDirectoryName, ULARGE_INTEGER* lpFreeBytesAvailableToCaller, ULARGE_INTEGER* lpTotalNumberOfBytes, ULARGE_INTEGER* lpTotalNumberOfFreeBytes);
+
+/* Environment Expansion (Needed for Registry REG_EXPAND_SZ) */
+/* e.g. converting %SystemRoot% to C:\Windows */
+DWORD ExpandEnvironmentStringsW(LPCWSTR lpSrc, LPWSTR lpDst, DWORD nSize);
+
+/* --- ENHANCEMENTS END --- */
 ]]
 
 return ffi.load("kernel32")

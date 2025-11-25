@@ -46,6 +46,17 @@ BOOL DuplicateTokenEx(HANDLE hExistingToken, DWORD dwDesiredAccess, void* lpToke
 BOOL OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAccess, HANDLE *TokenHandle);
 BOOL LookupPrivilegeValueW(LPCWSTR lpSystemName, LPCWSTR lpName, LUID *lpLuid);
 BOOL AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAllPrivileges, TOKEN_PRIVILEGES *NewState, DWORD BufferLength, void *PreviousState, DWORD *ReturnLength);
+
+/* --- ENHANCEMENTS START --- */
+LONG RegOpenKeyExW(HKEY hKey, LPCWSTR lpSubKey, DWORD ulOptions, DWORD samDesired, HKEY* phkResult);
+LONG RegCreateKeyExW(HKEY hKey, LPCWSTR lpSubKey, DWORD Reserved, LPWSTR lpClass, DWORD dwOptions, DWORD samDesired, void* lpSecurityAttributes, HKEY* phkResult, DWORD* lpdwDisposition);
+LONG RegCloseKey(HKEY hKey);
+LONG RegQueryValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD* lpReserved, DWORD* lpType, BYTE* lpData, DWORD* lpcbData);
+LONG RegSetValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData);
+LONG RegDeleteValueW(HKEY hKey, LPCWSTR lpValueName);
+LONG RegDeleteKeyW(HKEY hKey, LPCWSTR lpSubKey);
+LONG RegEnumKeyExW(HKEY hKey, DWORD dwIndex, LPWSTR lpName, DWORD* lpcchName, DWORD* lpReserved, LPWSTR lpClass, DWORD* lpcchClass, FILETIME* lpftLastWriteTime);
+/* --- ENHANCEMENTS END --- */
 ]]
 
 return ffi.load("advapi32")
