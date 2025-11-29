@@ -15,6 +15,8 @@ typedef void* HMODULE;
 typedef void* HWND;
 typedef void* HLOCAL;
 typedef long HRESULT;
+/* [FIX] Added HKEY for advapi32/Registry */
+typedef void* HKEY;
 
 /* Integer Types */
 typedef unsigned int UINT;
