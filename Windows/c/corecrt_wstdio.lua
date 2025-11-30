@@ -31,14 +31,14 @@ wint_t __cdecl putwchar( wchar_t _Character );
 /* int __cdecl _putws( wchar_t const* _Buffer ); */
 wint_t __cdecl ungetwc( wint_t _Character, FILE* _Stream );
 /* FILE * __cdecl _wfdopen( int _FileHandle, wchar_t const* _Mode ); */
-/* FILE* __cdecl _wfopen( wchar_t const* _FileName, wchar_t const* _Mode ); */
+FILE* __cdecl _wfopen( wchar_t const* _FileName, wchar_t const* _Mode );
 /* errno_t __cdecl _wfopen_s( FILE** _Stream, wchar_t const* _FileName, wchar_t const* _Mode ); */
 /* FILE* __cdecl _wfreopen( wchar_t const* _FileName, wchar_t const* _Mode, FILE* _OldStream ); */
 /* errno_t __cdecl _wfreopen_s( FILE** _Stream, wchar_t const* _FileName, wchar_t const* _Mode, FILE* _OldStream ); */
 /* FILE* __cdecl _wfsopen( wchar_t const* _FileName, wchar_t const* _Mode, int _ShFlag ); */
 /* void __cdecl _wperror( wchar_t const* _ErrorMessage ); */
 /* FILE* __cdecl _wpopen( wchar_t const* _Command, wchar_t const* _Mode ); */
-/* int __cdecl _wremove( wchar_t const* _FileName ); */
+int __cdecl _wremove( wchar_t const* _FileName );
 /*     #pragma push_macro("_wtempnam") */
 /* wchar_t* __cdecl _wtempnam( wchar_t const* _Directory, wchar_t const* _FilePrefix ); */
 /*     #pragma pop_macro("_wtempnam") */
