@@ -4,9 +4,11 @@ require 'ffi.req' 'Windows.sdk.minwindef'
 ffi.cdef [[
     typedef UINT_PTR SOCKET;
     
-    /* [FIX] Simplified constants to avoid parser errors with casts */
-    static const SOCKET INVALID_SOCKET = -1; 
-    static const int SOCKET_ERROR = -1;
+    /* Use enum for constants to avoid static const parser issues with unsigned typedefs */
+    enum {
+        INVALID_SOCKET = -1,
+        SOCKET_ERROR   = -1
+    };
 
     /* Error Codes */
     static const int WSAEWOULDBLOCK     = 10035;
