@@ -88,16 +88,6 @@ typedef struct _VM_COUNTERS {
     SIZE_T PeakPagefileUsage;
 } VM_COUNTERS;
 
-/* --- IO Counters --- */
-typedef struct _IO_COUNTERS {
-    ULONGLONG ReadOperationCount;
-    ULONGLONG WriteOperationCount;
-    ULONGLONG OtherOperationCount;
-    ULONGLONG ReadTransferCount;
-    ULONGLONG WriteTransferCount;
-    ULONGLONG OtherTransferCount;
-} IO_COUNTERS;
-
 /* --- Client ID --- */
 typedef struct _CLIENT_ID {
     HANDLE UniqueProcess;

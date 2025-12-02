@@ -114,6 +114,16 @@ static const DWORD REG_FULL_RESOURCE_DESCRIPTOR = 9;
 static const DWORD REG_RESOURCE_REQUIREMENTS_LIST = 10;
 static const DWORD REG_QWORD = 11;
 static const DWORD REG_QWORD_LITTLE_ENDIAN = 11;
+
+/* --- IO Counters (Shared) --- */
+typedef struct _IO_COUNTERS {
+    ULONGLONG ReadOperationCount;
+    ULONGLONG WriteOperationCount;
+    ULONGLONG OtherOperationCount;
+    ULONGLONG ReadTransferCount;
+    ULONGLONG WriteTransferCount;
+    ULONGLONG OtherTransferCount;
+} IO_COUNTERS;
 ]]
 
 return ffi.C

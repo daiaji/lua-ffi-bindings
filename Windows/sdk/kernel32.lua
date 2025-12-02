@@ -117,15 +117,6 @@ typedef struct _JOBOBJECT_BASIC_LIMIT_INFORMATION {
     DWORD         SchedulingClass;
 } JOBOBJECT_BASIC_LIMIT_INFORMATION;
 
-typedef struct _IO_COUNTERS {
-    ULONGLONG ReadOperationCount;
-    ULONGLONG WriteOperationCount;
-    ULONGLONG OtherOperationCount;
-    ULONGLONG ReadTransferCount;
-    ULONGLONG WriteTransferCount;
-    ULONGLONG OtherTransferCount;
-} IO_COUNTERS;
-
 typedef struct _JOBOBJECT_EXTENDED_LIMIT_INFORMATION {
     JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
     IO_COUNTERS                       IoInfo;
