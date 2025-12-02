@@ -27,10 +27,25 @@ static const DWORD WAIT_FAILED = 0xFFFFFFFF;
 static const DWORD TH32CS_SNAPPROCESS = 0x00000002;
 static const DWORD STARTF_USESHOWWINDOW = 0x00000001;
 
+/* --- File Types (for GetFileType) --- */
+static const DWORD FILE_TYPE_UNKNOWN = 0x0000;
+static const DWORD FILE_TYPE_DISK    = 0x0001;
+static const DWORD FILE_TYPE_CHAR    = 0x0002;
+static const DWORD FILE_TYPE_PIPE    = 0x0003;
+static const DWORD FILE_TYPE_REMOTE  = 0x8000;
+
+/* --- Memory Management Constants --- */
+static const DWORD MEM_COMMIT = 0x00001000;
+static const DWORD MEM_RESERVE = 0x00002000;
+static const DWORD MEM_RELEASE = 0x00008000;
+static const DWORD PAGE_READWRITE = 0x04;
+
 /* --- Error Constants --- */
 static const DWORD ERROR_ACCESS_DENIED = 5;
 static const DWORD ERROR_INVALID_PARAMETER = 87;
 static const DWORD ERROR_NOT_FOUND = 1168;
+static const DWORD ERROR_MORE_DATA = 234;
+static const DWORD ERROR_NO_MORE_FILES = 18;
 
 /* --- Priority Constants --- */
 static const DWORD IDLE_PRIORITY_CLASS = 0x00000040;
@@ -59,8 +74,10 @@ static const DWORD OPEN_EXISTING = 3;
 static const DWORD OPEN_ALWAYS = 4;
 static const DWORD TRUNCATE_EXISTING = 5;
 
-/* --- File Attributes --- */
+/* --- File Attributes & Flags --- */
 static const DWORD FILE_ATTRIBUTE_NORMAL = 0x00000080;
+static const DWORD FILE_FLAG_NO_BUFFERING = 0x20000000;
+static const DWORD FILE_FLAG_WRITE_THROUGH = 0x80000000;
 
 /* --- File & Disposition Constants --- */
 static const DWORD DELETE = 0x00010000;
@@ -69,19 +86,13 @@ static const DWORD FILE_SHARE_WRITE = 0x00000002;
 static const DWORD FILE_SHARE_DELETE = 0x00000004;
 static const DWORD FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
 
-/* FileInformationClass constants */
-static const int FileDispositionInfoEx = 21;
+/* --- DefineDosDevice Flags --- */
+static const DWORD DDD_RAW_TARGET_PATH = 0x00000001;
+static const DWORD DDD_REMOVE_DEFINITION = 0x00000002;
+static const DWORD DDD_EXACT_MATCH_ON_REMOVE = 0x00000004;
+static const DWORD DDD_NO_BROADCAST_SYSTEM = 0x00000008;
 
-/* FILE_DISPOSITION_INFO_EX Flags */
-static const DWORD FILE_DISPOSITION_DELETE = 0x00000001;
-static const DWORD FILE_DISPOSITION_POSIX_SEMANTICS = 0x00000002;
-
-/* --- File Move Constants --- */
-static const DWORD MOVEFILE_REPLACE_EXISTING = 0x00000001;
-static const DWORD MOVEFILE_COPY_ALLOWED = 0x00000002;
-static const DWORD MOVEFILE_WRITE_THROUGH = 0x00000008;
-
-/* --- Structures for CreateProcess --- */
+/* --- Structures --- */
 typedef struct _STARTUPINFOW {
     DWORD cb;
     LPWSTR lpReserved;
@@ -110,7 +121,6 @@ typedef struct _PROCESS_INFORMATION {
     DWORD dwThreadId;
 } PROCESS_INFORMATION, *LPPROCESS_INFORMATION;
 
-/* --- Structures for Toolhelp32 --- */
 typedef struct _PROCESSENTRY32W {
     DWORD dwSize;
     DWORD cntUsage;
@@ -124,20 +134,19 @@ typedef struct _PROCESSENTRY32W {
     WCHAR szExeFile[260];
 } PROCESSENTRY32W;
 
-/* --- Structures for File Operations --- */
 typedef struct _FILE_DISPOSITION_INFO_EX {
     DWORD Flags;
 } FILE_DISPOSITION_INFO_EX;
 
-/* --- Handle API --- */
+/* --- API Functions --- */
 BOOL CloseHandle(HANDLE hObject);
 
-/* --- Toolhelp32 API --- */
+/* Toolhelp */
 HANDLE CreateToolhelp32Snapshot(DWORD dwFlags, DWORD th32ProcessID);
 BOOL Process32FirstW(HANDLE hSnapshot, PROCESSENTRY32W* lppe);
 BOOL Process32NextW(HANDLE hSnapshot, PROCESSENTRY32W* lppe);
 
-/* --- Process & Thread --- */
+/* Process & Thread */
 BOOL CreateProcessW(LPCWSTR, LPWSTR, void*, void*, BOOL, DWORD, void*, LPCWSTR, STARTUPINFOW*, PROCESS_INFORMATION*);
 HANDLE OpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId);
 BOOL TerminateProcess(HANDLE hProcess, unsigned int uExitCode);
@@ -154,23 +163,37 @@ DWORD GetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
 LPWSTR GetCommandLineW(void);
 BOOL QueryFullProcessImageNameW(HANDLE hProcess, DWORD dwFlags, LPWSTR lpExeName, DWORD* lpdwSize);
 DWORD WTSGetActiveConsoleSessionId(void);
+UINT GetWindowsDirectoryW(LPWSTR lpBuffer, UINT uSize);
 
-/* --- Module Handling --- */
+/* Module */
 HMODULE LoadLibraryW(LPCWSTR lpLibFileName);
+HMODULE GetModuleHandleW(LPCWSTR lpModuleName);
+/* GetProcAddress always takes ANSI string for symbol name */
+void* GetProcAddress(HMODULE hModule, LPCSTR lpProcName);
 BOOL FreeLibrary(HMODULE hLibModule);
 
-/* --- Environment API --- */
+/* Env */
 BOOL SetEnvironmentVariableW(LPCWSTR lpName, LPCWSTR lpValue);
 DWORD GetEnvironmentVariableW(LPCWSTR lpName, LPWSTR lpBuffer, DWORD nSize);
+DWORD ExpandEnvironmentStringsW(LPCWSTR lpSrc, LPWSTR lpDst, DWORD nSize);
 
-/* --- Event API --- */
+/* Event */
 HANDLE CreateEventW(void* lpEventAttributes, BOOL bManualReset, BOOL bInitialState, LPCWSTR lpName);
 HANDLE OpenEventW(DWORD dwDesiredAccess, BOOL bInheritHandle, LPCWSTR lpName);
 BOOL SetEvent(HANDLE hEvent);
 BOOL ResetEvent(HANDLE hEvent);
 
-/* --- File API --- */
+/* File I/O */
 HANDLE CreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, void* lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
+BOOL ReadFile(HANDLE hFile, void* lpBuffer, DWORD nNumberOfBytesToRead, DWORD* lpNumberOfBytesRead, void* lpOverlapped);
+BOOL WriteFile(HANDLE hFile, const void* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD* lpNumberOfBytesWritten, void* lpOverlapped);
+BOOL FlushFileBuffers(HANDLE hFile);
+BOOL GetFileSizeEx(HANDLE hFile, LARGE_INTEGER* lpFileSize);
+BOOL SetFilePointerEx(HANDLE hFile, LARGE_INTEGER liDistanceToMove, LARGE_INTEGER* lpNewFilePointer, DWORD dwMoveMethod);
+BOOL DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID lpInBuffer, DWORD nInBufferSize, LPVOID lpOutBuffer, DWORD nOutBufferSize, LPDWORD lpBytesReturned, void* lpOverlapped);
+DWORD GetFileType(HANDLE hFile); 
+
+/* File Operations */
 BOOL CopyFileW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName, BOOL bFailIfExists);
 BOOL MoveFileExW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName, DWORD dwFlags);
 BOOL CreateHardLinkW(LPCWSTR lpFileName, LPCWSTR lpExistingFileName, void* lpSecurityAttributes);
@@ -183,34 +206,42 @@ BOOL CreateDirectoryW(LPCWSTR lpPathName, void* lpSecurityAttributes);
 BOOL RemoveDirectoryW(LPCWSTR lpPathName);
 DWORD GetFullPathNameW(LPCWSTR lpFileName, DWORD nBufferLength, LPWSTR lpBuffer, LPWSTR* lpFilePart);
 
-/* --- Memory Management --- */
-HLOCAL LocalFree(HLOCAL hMem);
-
-/* --- String Encoding & Comparisons --- */
-int WideCharToMultiByte(unsigned int CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, int* lpUsedDefaultChar);
-int MultiByteToWideChar(unsigned int CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPTSTR lpWideCharStr, int cchWideChar);
-/* [MOVED] Needed for zero-allocation comparisons in proc.lua */
-int lstrcmpiW(LPCWSTR lpString1, LPCWSTR lpString2);
-
-/* --- Error Handling --- */
-DWORD GetLastError(void);
-void SetLastError(DWORD dwErrCode);
-DWORD FormatMessageW(DWORD dwFlags, const void* lpSource, DWORD dwMessageId, DWORD dwLanguageId, LPWSTR lpBuffer, DWORD nSize, void* Arguments);
-
-/* --- File I/O --- */
-BOOL ReadFile(HANDLE hFile, void* lpBuffer, DWORD nNumberOfBytesToRead, DWORD* lpNumberOfBytesRead, void* lpOverlapped);
-BOOL WriteFile(HANDLE hFile, const void* lpBuffer, DWORD nNumberOfBytesToWrite, DWORD* lpNumberOfBytesWritten, void* lpOverlapped);
-BOOL FlushFileBuffers(HANDLE hFile);
-BOOL GetFileSizeEx(HANDLE hFile, LARGE_INTEGER* lpFileSize);
-BOOL SetFilePointerEx(HANDLE hFile, LARGE_INTEGER liDistanceToMove, LARGE_INTEGER* lpNewFilePointer, DWORD dwMoveMethod);
-
-/* --- File Attributes & Drive Info --- */
+/* Volume & Drive Info */
 DWORD GetFileAttributesW(LPCWSTR lpFileName);
 BOOL SetFileAttributesW(LPCWSTR lpFileName, DWORD dwFileAttributes);
 DWORD GetLogicalDrives(void);
 UINT GetDriveTypeW(LPCWSTR lpRootPathName);
-BOOL GetVolumeInformationW(LPCWSTR lpRootPathName, LPWSTR lpVolumeNameBuffer, DWORD nVolumeNameSize, DWORD* lpVolumeSerialNumber, DWORD* lpMaximumComponentLength, DWORD* lpFileSystemFlags, LPWSTR lpFileSystemNameBuffer, DWORD nFileSystemNameSize);
 BOOL GetDiskFreeSpaceExW(LPCWSTR lpDirectoryName, ULARGE_INTEGER* lpFreeBytesAvailableToCaller, ULARGE_INTEGER* lpTotalNumberOfBytes, ULARGE_INTEGER* lpTotalNumberOfFreeBytes);
+
+/* Volume Management */
+HANDLE FindFirstVolumeW(LPWSTR lpszVolumeName, DWORD cchBufferLength);
+BOOL FindNextVolumeW(HANDLE hFindVolume, LPWSTR lpszVolumeName, DWORD cchBufferLength);
+BOOL FindVolumeClose(HANDLE hFindVolume);
+BOOL GetVolumeInformationW(LPCWSTR lpRootPathName, LPWSTR lpVolumeNameBuffer, DWORD nVolumeNameSize, DWORD* lpVolumeSerialNumber, DWORD* lpMaximumComponentLength, DWORD* lpFileSystemFlags, LPWSTR lpFileSystemNameBuffer, DWORD nFileSystemNameSize);
+BOOL GetVolumePathNamesForVolumeNameW(LPCWSTR lpszVolumeName, LPWSTR lpszVolumePathNames, DWORD cchBufferLength, DWORD* lpcchReturnLength);
+BOOL SetVolumeMountPointW(LPCWSTR lpszVolumeMountPoint, LPCWSTR lpszVolumeName);
+BOOL DeleteVolumeMountPointW(LPCWSTR lpszVolumeMountPoint);
+BOOL GetVolumeNameForVolumeMountPointW(LPCWSTR lpszVolumeMountPoint, LPWSTR lpszVolumeName, DWORD cchBufferLength);
+BOOL SetVolumeLabelW(LPCWSTR lpRootPathName, LPCWSTR lpVolumeName);
+
+/* DOS Device Management */
+DWORD QueryDosDeviceW(LPCWSTR lpDeviceName, LPWSTR lpTargetPath, DWORD ucchMax);
+BOOL DefineDosDeviceW(DWORD dwFlags, LPCWSTR lpDeviceName, LPCWSTR lpTargetPath);
+
+/* Memory */
+HLOCAL LocalFree(HLOCAL hMem);
+LPVOID VirtualAlloc(LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect);
+BOOL VirtualFree(LPVOID lpAddress, SIZE_T dwSize, DWORD dwFreeType);
+
+/* String */
+int WideCharToMultiByte(unsigned int CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, int* lpUsedDefaultChar);
+int MultiByteToWideChar(unsigned int CodePage, DWORD dwFlags, LPCSTR lpMultiByteStr, int cbMultiByte, LPTSTR lpWideCharStr, int cchWideChar);
+int lstrcmpiW(LPCWSTR lpString1, LPCWSTR lpString2);
+
+/* Error */
+DWORD GetLastError(void);
+void SetLastError(DWORD dwErrCode);
+DWORD FormatMessageW(DWORD dwFlags, const void* lpSource, DWORD dwMessageId, DWORD dwLanguageId, LPWSTR lpBuffer, DWORD nSize, void* Arguments);
 
 /* --- Environment Expansion --- */
 DWORD ExpandEnvironmentStringsW(LPCWSTR lpSrc, LPWSTR lpDst, DWORD nSize);

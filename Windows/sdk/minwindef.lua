@@ -28,12 +28,14 @@ typedef unsigned short USHORT;
 typedef long LONG;
 typedef unsigned long long ULONGLONG;
 typedef long long LONGLONG;
+typedef unsigned long long DWORD64;
 
 /* Pointer Sized Types */
 typedef size_t ULONG_PTR;
 typedef ptrdiff_t LONG_PTR;
 typedef size_t UINT_PTR;
 typedef ptrdiff_t INT_PTR;
+typedef ULONG_PTR DWORD_PTR;
 
 /* Message Parameters */
 typedef UINT_PTR WPARAM;
@@ -48,6 +50,7 @@ typedef const char* LPCSTR;
 typedef unsigned char BOOLEAN;
 typedef wchar_t* LPWSTR;
 typedef wchar_t WCHAR;
+typedef WCHAR *PWSTR;
 
 /* 64-bit Integer Unions */
 typedef union _LARGE_INTEGER {
