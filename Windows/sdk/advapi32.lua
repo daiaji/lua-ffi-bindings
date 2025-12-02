@@ -2,6 +2,10 @@ local ffi = require 'ffi'
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
+/* --- Service Handle Types --- */
+typedef HANDLE SC_HANDLE;
+typedef SC_HANDLE *LPSC_HANDLE;
+
 static const DWORD MAXIMUM_ALLOWED = 0x02000000;
 static const DWORD CREATE_UNICODE_ENVIRONMENT = 0x00000400;
 
