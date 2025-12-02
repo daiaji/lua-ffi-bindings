@@ -4,7 +4,9 @@ require 'ffi.req' 'Windows.sdk.minwindef'
 ffi.cdef [[
     typedef DWORD CONFIGRET;
     typedef DWORD DEVINST;
+    typedef DEVINST *PDEVINST; /* [FIX] Added pointer definition */
     typedef DWORD DEVNODE;
+    typedef DEVNODE *PDEVNODE; /* [FIX] Added pointer definition */
     typedef CHAR* DEVINSTID_A;
     typedef WCHAR* DEVINSTID_W;
 
