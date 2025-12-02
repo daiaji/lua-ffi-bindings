@@ -29,6 +29,7 @@ typedef void* HLOCAL;
 typedef void* HKEY;
 typedef void* PVOID;
 typedef void* LPVOID; 
+typedef void* PSID; /* [FIX] Added PSID definition */
 
 /* --- Pointers to Integers --- */
 typedef DWORD *PDWORD;
