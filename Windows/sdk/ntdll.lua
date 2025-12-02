@@ -13,10 +13,11 @@ static const ULONG STATUS_ACCESS_DENIED = 0xC0000022;
 static const ULONG STATUS_INVALID_PARAMETER = 0xC000000D;
 
 /* --- Memory Constants --- */
-static const ULONG MEM_COMMIT      = 0x1000;
-static const ULONG MEM_RESERVE     = 0x2000;
+/* [FIX] Commented out constants that conflict with kernel32.lua */
+/* static const ULONG MEM_COMMIT      = 0x1000; */
+/* static const ULONG MEM_RESERVE     = 0x2000; */
 static const ULONG MEM_DECOMMIT    = 0x4000;
-static const ULONG MEM_RELEASE     = 0x8000;
+/* static const ULONG MEM_RELEASE     = 0x8000; */
 static const ULONG MEM_FREE        = 0x10000;
 static const ULONG MEM_PRIVATE     = 0x20000;
 static const ULONG MEM_MAPPED      = 0x40000;
@@ -24,7 +25,7 @@ static const ULONG MEM_IMAGE       = 0x1000000;
 
 static const ULONG PAGE_NOACCESS          = 0x01;
 static const ULONG PAGE_READONLY          = 0x02;
-static const ULONG PAGE_READWRITE         = 0x04;
+/* static const ULONG PAGE_READWRITE         = 0x04; */
 static const ULONG PAGE_WRITECOPY         = 0x08;
 static const ULONG PAGE_EXECUTE           = 0x10;
 static const ULONG PAGE_EXECUTE_READ      = 0x20;
