@@ -29,7 +29,14 @@ typedef void* HLOCAL;
 typedef void* HKEY;
 typedef void* PVOID;
 typedef void* LPVOID; 
-typedef void* PSID; /* [FIX] Added PSID definition */
+typedef void* PSID;
+
+/* [FIX] Added missing pointer types */
+typedef HANDLE *PHANDLE;
+typedef HANDLE *LPHANDLE;
+
+/* [FIX] Added HRESULT */
+typedef LONG HRESULT;
 
 /* --- Pointers to Integers --- */
 typedef DWORD *PDWORD;
@@ -38,8 +45,6 @@ typedef ULONG *PULONG;
 typedef USHORT *PUSHORT;
 typedef unsigned char *PBYTE;
 typedef unsigned char *LPBYTE;
-typedef ULONG *PULONG;
-typedef USHORT *PUSHORT;
 
 /* --- Pointer-Sized Integers & Types --- */
 typedef size_t ULONG_PTR;

@@ -117,6 +117,8 @@ typedef struct _JOBOBJECT_BASIC_LIMIT_INFORMATION {
     DWORD         SchedulingClass;
 } JOBOBJECT_BASIC_LIMIT_INFORMATION;
 
+/* [FIX] IO_COUNTERS is defined in minwindef.lua */
+
 typedef struct _JOBOBJECT_EXTENDED_LIMIT_INFORMATION {
     JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
     IO_COUNTERS                       IoInfo;
