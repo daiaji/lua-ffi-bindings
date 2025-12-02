@@ -12,6 +12,14 @@ typedef float FLOAT;
 typedef int INT;
 typedef unsigned int UINT;
 
+/* --- Extended Integers (Moved up for dependency resolution) --- */
+typedef unsigned long ULONG;
+typedef unsigned short USHORT;
+typedef long LONG;
+typedef unsigned long long ULONGLONG;
+typedef long long LONGLONG;
+typedef unsigned long long DWORD64;
+
 /* --- Pointer Types --- */
 typedef void* HANDLE;
 typedef void* HINSTANCE;
@@ -29,14 +37,8 @@ typedef ULONG *PULONG;
 typedef USHORT *PUSHORT;
 typedef unsigned char *PBYTE;
 typedef unsigned char *LPBYTE;
-
-/* --- Extended Integers --- */
-typedef unsigned long ULONG;
-typedef unsigned short USHORT;
-typedef long LONG;
-typedef unsigned long long ULONGLONG;
-typedef long long LONGLONG;
-typedef unsigned long long DWORD64;
+typedef ULONG *PULONG;
+typedef USHORT *PUSHORT;
 
 /* --- Pointer-Sized Integers & Types --- */
 typedef size_t ULONG_PTR;
