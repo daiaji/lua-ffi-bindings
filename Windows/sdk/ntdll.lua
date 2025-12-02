@@ -32,6 +32,7 @@ static const ULONG PAGE_WRITECOMBINE      = 0x400;
 
 /* --- Basic Types --- */
 typedef SIZE_T *PSIZE_T;
+typedef LONG KPRIORITY;
 
 typedef struct _UNICODE_STRING {
     USHORT Length;
@@ -249,6 +250,33 @@ typedef struct _TOKEN_MANDATORY_LABEL {
 typedef struct _TOKEN_ELEVATION {
     DWORD TokenIsElevated;
 } TOKEN_ELEVATION;
+
+/* --- PEB & Process Basic Information (Fixes for win-utils/process) --- */
+typedef struct _PEB {
+    BYTE Reserved1[2];
+    BYTE BeingDebugged;
+    BYTE Reserved2[1];
+    PVOID Reserved3[2];
+    PVOID Ldr;
+    PVOID ProcessParameters; /* PRTL_USER_PROCESS_PARAMETERS */
+    /* ... incomplete opaque struct ... */
+} PEB, *PPEB;
+
+typedef struct _PROCESS_BASIC_INFORMATION {
+    NTSTATUS ExitStatus;
+    PPEB PebBaseAddress;
+    ULONG_PTR AffinityMask;
+    KPRIORITY BasePriority;
+    ULONG_PTR UniqueProcessId;
+    ULONG_PTR InheritedFromUniqueProcessId;
+} PROCESS_BASIC_INFORMATION;
+
+typedef struct _RTL_USER_PROCESS_PARAMETERS {
+    BYTE Reserved1[16];
+    PVOID Reserved2[10];
+    UNICODE_STRING ImagePathName;
+    UNICODE_STRING CommandLine;
+} RTL_USER_PROCESS_PARAMETERS;
 
 /* --- API Functions --- */
 long __stdcall NtQuerySystemInformation(
