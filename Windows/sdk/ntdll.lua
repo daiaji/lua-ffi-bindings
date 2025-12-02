@@ -34,7 +34,7 @@ static const int PAGE_NOCACHE           = 0x200;
 static const int PAGE_WRITECOMBINE      = 0x400;
 
 /* --- Basic Types --- */
-typedef size_t SIZE_T;
+/* SIZE_T is now defined in minwindef.lua */
 typedef SIZE_T *PSIZE_T;
 
 typedef struct _UNICODE_STRING {

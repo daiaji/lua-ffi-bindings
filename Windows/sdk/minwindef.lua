@@ -17,14 +17,24 @@ typedef void* HLOCAL;
 typedef long HRESULT;
 typedef void* HKEY;
 
+/* Common Pointer Types */
+typedef DWORD *PDWORD;
+typedef DWORD *LPDWORD;
+typedef void *LPVOID;
+typedef const void *LPCVOID;
+
 /* Integer Types */
 typedef unsigned int UINT;
 typedef int INT;
 typedef void* PVOID;
-typedef void* LPVOID;
+// LPVOID is defined above
 
 typedef unsigned long ULONG;
+typedef unsigned long *PULONG;
 typedef unsigned short USHORT;
+typedef unsigned short *PUSHORT;
+typedef unsigned char *PBYTE;
+typedef unsigned char *LPBYTE;
 typedef long LONG;
 typedef unsigned long long ULONGLONG;
 typedef long long LONGLONG;
@@ -36,6 +46,8 @@ typedef ptrdiff_t LONG_PTR;
 typedef size_t UINT_PTR;
 typedef ptrdiff_t INT_PTR;
 typedef ULONG_PTR DWORD_PTR;
+typedef size_t SIZE_T;
+typedef ptrdiff_t SSIZE_T;
 
 /* Message Parameters */
 typedef UINT_PTR WPARAM;
