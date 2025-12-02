@@ -4,35 +4,35 @@ require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
 /* --- NT Status Codes --- */
-static const int STATUS_SUCCESS = 0x00000000;
-static const int STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
-static const int STATUS_BUFFER_OVERFLOW = 0x80000005;
-static const int STATUS_BUFFER_TOO_SMALL = 0xC0000023;
-static const int STATUS_NO_MORE_ENTRIES = 0x8000001A;
-static const int STATUS_ACCESS_DENIED = 0xC0000022;
-static const int STATUS_INVALID_PARAMETER = 0xC000000D;
+static const uint32_t STATUS_SUCCESS = 0x00000000;
+static const uint32_t STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
+static const uint32_t STATUS_BUFFER_OVERFLOW = 0x80000005;
+static const uint32_t STATUS_BUFFER_TOO_SMALL = 0xC0000023;
+static const uint32_t STATUS_NO_MORE_ENTRIES = 0x8000001A;
+static const uint32_t STATUS_ACCESS_DENIED = 0xC0000022;
+static const uint32_t STATUS_INVALID_PARAMETER = 0xC000000D;
 
 /* --- Memory Constants --- */
-static const int MEM_COMMIT      = 0x1000;
-static const int MEM_RESERVE     = 0x2000;
-static const int MEM_DECOMMIT    = 0x4000;
-static const int MEM_RELEASE     = 0x8000;
-static const int MEM_FREE        = 0x10000;
-static const int MEM_PRIVATE     = 0x20000;
-static const int MEM_MAPPED      = 0x40000;
-static const int MEM_IMAGE       = 0x1000000;
+static const uint32_t MEM_COMMIT      = 0x1000;
+static const uint32_t MEM_RESERVE     = 0x2000;
+static const uint32_t MEM_DECOMMIT    = 0x4000;
+static const uint32_t MEM_RELEASE     = 0x8000;
+static const uint32_t MEM_FREE        = 0x10000;
+static const uint32_t MEM_PRIVATE     = 0x20000;
+static const uint32_t MEM_MAPPED      = 0x40000;
+static const uint32_t MEM_IMAGE       = 0x1000000;
 
-static const int PAGE_NOACCESS          = 0x01;
-static const int PAGE_READONLY          = 0x02;
-static const int PAGE_READWRITE         = 0x04;
-static const int PAGE_WRITECOPY         = 0x08;
-static const int PAGE_EXECUTE           = 0x10;
-static const int PAGE_EXECUTE_READ      = 0x20;
-static const int PAGE_EXECUTE_READWRITE = 0x40;
-static const int PAGE_EXECUTE_WRITECOPY = 0x80;
-static const int PAGE_GUARD             = 0x100;
-static const int PAGE_NOCACHE           = 0x200;
-static const int PAGE_WRITECOMBINE      = 0x400;
+static const uint32_t PAGE_NOACCESS          = 0x01;
+static const uint32_t PAGE_READONLY          = 0x02;
+static const uint32_t PAGE_READWRITE         = 0x04;
+static const uint32_t PAGE_WRITECOPY         = 0x08;
+static const uint32_t PAGE_EXECUTE           = 0x10;
+static const uint32_t PAGE_EXECUTE_READ      = 0x20;
+static const uint32_t PAGE_EXECUTE_READWRITE = 0x40;
+static const uint32_t PAGE_EXECUTE_WRITECOPY = 0x80;
+static const uint32_t PAGE_GUARD             = 0x100;
+static const uint32_t PAGE_NOCACHE           = 0x200;
+static const uint32_t PAGE_WRITECOMBINE      = 0x400;
 
 /* --- Basic Types --- */
 typedef SIZE_T *PSIZE_T;
@@ -157,6 +157,29 @@ typedef struct _PROCESS_HANDLE_SNAPSHOT_INFORMATION {
     ULONG_PTR Reserved;
     PROCESS_HANDLE_TABLE_ENTRY_INFO Handles[1];
 } PROCESS_HANDLE_SNAPSHOT_INFORMATION;
+
+/* --- Handle Enumeration (SystemExtendedHandleInformation) --- */
+typedef struct _SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX {
+    PVOID Object;
+    ULONG_PTR UniqueProcessId;
+    ULONG_PTR HandleValue;
+    ULONG GrantedAccess;
+    USHORT CreatorBackTraceIndex;
+    USHORT ObjectTypeIndex;
+    ULONG HandleAttributes;
+    ULONG Reserved;
+} SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX;
+
+typedef struct _SYSTEM_HANDLE_INFORMATION_EX {
+    ULONG_PTR NumberOfHandles;
+    ULONG_PTR Reserved;
+    SYSTEM_HANDLE_TABLE_ENTRY_INFO_EX Handles[1];
+} SYSTEM_HANDLE_INFORMATION_EX;
+
+/* --- Object Name Information --- */
+typedef struct _OBJECT_NAME_INFORMATION {
+    UNICODE_STRING Name;
+} OBJECT_NAME_INFORMATION;
 
 /* --- Memory Basic Information --- */
 typedef struct _MEMORY_BASIC_INFORMATION {
