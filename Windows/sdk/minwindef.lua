@@ -1,6 +1,8 @@
 local ffi = require 'ffi'
--- Ensure size_t/ptrdiff_t are available
+-- [FIX] Ensure size_t/ptrdiff_t are available
 require 'ffi.req' 'c.stddef'
+-- [FIX] Ensure C99 types (uint8_t, etc.) are available for winioctl/filesystem
+require 'ffi.req' 'c.stdint'
 
 ffi.cdef [[
 /* --- Basic Integer Types --- */
@@ -12,7 +14,18 @@ typedef float FLOAT;
 typedef int INT;
 typedef unsigned int UINT;
 
-/* --- Extended Integers (Moved up for dependency resolution) --- */
+/* --- Extended Integers (BaseTsd.h) --- */
+/* [FIX] Added missing fixed-width Windows types (UINT8, INT32, etc.) */
+typedef signed char         INT8, *PINT8;
+typedef short               INT16, *PINT16;
+typedef int                 INT32, *PINT32;
+typedef __int64             INT64, *PINT64;
+typedef unsigned char       UINT8, *PUINT8;
+typedef unsigned short      UINT16, *PUINT16;
+typedef unsigned int        UINT32, *PUINT32;
+typedef unsigned __int64    UINT64, *PUINT64;
+
+/* --- Extended Integers (Legacy) --- */
 typedef unsigned long ULONG;
 typedef unsigned short USHORT;
 typedef long LONG;
@@ -29,9 +42,9 @@ typedef void* HLOCAL;
 typedef void* HKEY;
 typedef void* PVOID;
 typedef void* LPVOID; 
-typedef void* PSID;
+typedef void* PSID; /* [FIX] Added PSID */
 
-/* [FIX] Added missing pointer types */
+/* [FIX] Added missing pointer-to-handle types */
 typedef HANDLE *PHANDLE;
 typedef HANDLE *LPHANDLE;
 
@@ -45,6 +58,8 @@ typedef ULONG *PULONG;
 typedef USHORT *PUSHORT;
 typedef unsigned char *PBYTE;
 typedef unsigned char *LPBYTE;
+typedef ULONG *PULONG;
+typedef USHORT *PUSHORT;
 
 /* --- Pointer-Sized Integers & Types --- */
 typedef size_t ULONG_PTR;
