@@ -18,6 +18,13 @@ typedef struct _PROCESS_MEMORY_COUNTERS_EX {
 
 DWORD GetModuleFileNameExW(HANDLE hProcess, HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
 BOOL GetProcessMemoryInfo(HANDLE Process, void* ppsmemCounters, DWORD cb);
+
+/* [NEW] Module Enumeration */
+static const DWORD LIST_MODULES_ALL = 0x03;
+static const DWORD LIST_MODULES_32BIT = 0x01;
+static const DWORD LIST_MODULES_64BIT = 0x02;
+
+BOOL EnumProcessModulesEx(HANDLE hProcess, HMODULE* lphModule, DWORD cb, LPDWORD lpcbNeeded, DWORD dwFilterFlag);
 ]]
 
 return ffi.load("psapi")

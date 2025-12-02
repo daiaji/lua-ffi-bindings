@@ -27,8 +27,20 @@ ffi.cdef[[
     static const uint32_t VOLUME_GET_VOLUME_DISK_EXTENTS   = 0x00560000;
 
     /* --- [NEW] USB IOCTLs for Rufus CyclePort --- */
-    /* FILE_DEVICE_UNKNOWN(0x22) | Function(273) | METHOD_BUFFERED | FILE_ANY_ACCESS */
     static const uint32_t IOCTL_USB_HUB_CYCLE_PORT         = 0x00220444;
+
+    /* --- [NEW] Reparse Point Tags --- */
+    static const uint32_t IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
+    static const uint32_t IO_REPARSE_TAG_SYMLINK     = 0xA000000C;
+    static const uint32_t IO_REPARSE_TAG_DEDUP       = 0x80000013;
+    
+    /* --- [NEW] FSCTLs for Reparse & Attributes --- */
+    static const uint32_t FSCTL_GET_REPARSE_POINT    = 0x000900A8;
+    static const uint32_t FSCTL_SET_REPARSE_POINT    = 0x000900A4;
+    static const uint32_t FSCTL_DELETE_REPARSE_POINT = 0x000900AC;
+    static const uint32_t FSCTL_SET_SPARSE           = 0x000900C4;
+    static const uint32_t FSCTL_SET_COMPRESSION      = 0x0009C040;
+    static const uint32_t FSCTL_GET_COMPRESSION      = 0x0009003C;
 
     /* --- Enumerations --- */
     typedef enum _PARTITION_STYLE {
@@ -182,6 +194,48 @@ ffi.cdef[[
         ULONG ConnectionIndex;
         ULONG StatusReturned;
     } USB_CYCLE_PORT_PARAMS;
+
+    /* --- [NEW] Reparse Data Buffers --- */
+    typedef struct _REPARSE_DATA_BUFFER_HEADER {
+        uint32_t ReparseTag;
+        uint16_t ReparseDataLength;
+        uint16_t Reserved;
+    } REPARSE_DATA_BUFFER_HEADER;
+
+    typedef struct _SYMBOLIC_LINK_REPARSE_BUFFER {
+        uint32_t ReparseTag;
+        uint16_t ReparseDataLength;
+        uint16_t Reserved;
+        uint16_t SubstituteNameOffset;
+        uint16_t SubstituteNameLength;
+        uint16_t PrintNameOffset;
+        uint16_t PrintNameLength;
+        uint32_t Flags;
+        wchar_t  PathBuffer[1];
+    } SYMBOLIC_LINK_REPARSE_BUFFER;
+
+    typedef struct _MOUNT_POINT_REPARSE_BUFFER {
+        uint32_t ReparseTag;
+        uint16_t ReparseDataLength;
+        uint16_t Reserved;
+        uint16_t SubstituteNameOffset;
+        uint16_t SubstituteNameLength;
+        uint16_t PrintNameOffset;
+        uint16_t PrintNameLength;
+        wchar_t  PathBuffer[1];
+    } MOUNT_POINT_REPARSE_BUFFER;
+    
+    typedef struct _REPARSE_DATA_BUFFER {
+        uint32_t ReparseTag;
+        uint16_t ReparseDataLength;
+        uint16_t Reserved;
+        uint8_t  DataBuffer[1];
+    } REPARSE_DATA_BUFFER;
+    
+    /* Compression Constants */
+    static const uint16_t COMPRESSION_FORMAT_NONE    = 0x0000;
+    static const uint16_t COMPRESSION_FORMAT_DEFAULT = 0x0001;
+    static const uint16_t COMPRESSION_FORMAT_LZNT1   = 0x0002;
 ]]
 
 return ffi.load("kernel32")

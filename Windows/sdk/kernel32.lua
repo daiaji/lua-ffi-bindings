@@ -46,6 +46,7 @@ static const DWORD ERROR_INVALID_PARAMETER = 87;
 static const DWORD ERROR_NOT_FOUND = 1168;
 static const DWORD ERROR_MORE_DATA = 234;
 static const DWORD ERROR_NO_MORE_FILES = 18;
+static const DWORD ERROR_HANDLE_EOF = 38;
 
 /* --- Priority Constants --- */
 static const DWORD IDLE_PRIORITY_CLASS = 0x00000040;
@@ -76,6 +77,8 @@ static const DWORD TRUNCATE_EXISTING = 5;
 
 /* --- File Attributes & Flags --- */
 static const DWORD FILE_ATTRIBUTE_NORMAL = 0x00000080;
+static const DWORD FILE_ATTRIBUTE_DIRECTORY = 0x00000010;
+static const DWORD FILE_ATTRIBUTE_REPARSE_POINT = 0x00000400;
 static const DWORD FILE_FLAG_NO_BUFFERING = 0x20000000;
 static const DWORD FILE_FLAG_WRITE_THROUGH = 0x80000000;
 
@@ -85,12 +88,52 @@ static const DWORD FILE_SHARE_READ = 0x00000001;
 static const DWORD FILE_SHARE_WRITE = 0x00000002;
 static const DWORD FILE_SHARE_DELETE = 0x00000004;
 static const DWORD FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
+static const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x00200000;
 
 /* --- DefineDosDevice Flags --- */
 static const DWORD DDD_RAW_TARGET_PATH = 0x00000001;
 static const DWORD DDD_REMOVE_DEFINITION = 0x00000002;
 static const DWORD DDD_EXACT_MATCH_ON_REMOVE = 0x00000004;
 static const DWORD DDD_NO_BROADCAST_SYSTEM = 0x00000008;
+
+/* --- Symbolic Link Flags --- */
+static const DWORD SYMBOLIC_LINK_FLAG_DIRECTORY = 0x1;
+static const DWORD SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE = 0x2;
+
+/* --- Job Objects Constants & Structures --- */
+static const int JobObjectBasicLimitInformation = 2;
+static const int JobObjectExtendedLimitInformation = 9;
+static const DWORD JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000;
+
+typedef struct _JOBOBJECT_BASIC_LIMIT_INFORMATION {
+    LARGE_INTEGER PerProcessUserTimeLimit;
+    LARGE_INTEGER PerJobUserTimeLimit;
+    DWORD         LimitFlags;
+    SIZE_T        MinimumWorkingSetSize;
+    SIZE_T        MaximumWorkingSetSize;
+    DWORD         ActiveProcessLimit;
+    ULONG_PTR     Affinity;
+    DWORD         PriorityClass;
+    DWORD         SchedulingClass;
+} JOBOBJECT_BASIC_LIMIT_INFORMATION;
+
+typedef struct _IO_COUNTERS {
+    ULONGLONG ReadOperationCount;
+    ULONGLONG WriteOperationCount;
+    ULONGLONG OtherOperationCount;
+    ULONGLONG ReadTransferCount;
+    ULONGLONG WriteTransferCount;
+    ULONGLONG OtherTransferCount;
+} IO_COUNTERS;
+
+typedef struct _JOBOBJECT_EXTENDED_LIMIT_INFORMATION {
+    JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
+    IO_COUNTERS                       IoInfo;
+    SIZE_T                            ProcessMemoryLimit;
+    SIZE_T                            JobMemoryLimit;
+    SIZE_T                            PeakProcessMemoryUsed;
+    SIZE_T                            PeakJobMemoryUsed;
+} JOBOBJECT_EXTENDED_LIMIT_INFORMATION;
 
 /* --- Structures --- */
 typedef struct _STARTUPINFOW {
@@ -138,6 +181,16 @@ typedef struct _FILE_DISPOSITION_INFO_EX {
     DWORD Flags;
 } FILE_DISPOSITION_INFO_EX;
 
+/* --- File Streams (ADS) --- */
+typedef enum _STREAM_INFO_LEVELS {
+    FindStreamInfoStandard = 0
+} STREAM_INFO_LEVELS;
+
+typedef struct _WIN32_FIND_STREAM_DATA {
+    LARGE_INTEGER StreamSize;
+    WCHAR         cStreamName[296]; // MAX_PATH + 36
+} WIN32_FIND_STREAM_DATA;
+
 /* --- API Functions --- */
 BOOL CloseHandle(HANDLE hObject);
 
@@ -164,6 +217,13 @@ LPWSTR GetCommandLineW(void);
 BOOL QueryFullProcessImageNameW(HANDLE hProcess, DWORD dwFlags, LPWSTR lpExeName, DWORD* lpdwSize);
 DWORD WTSGetActiveConsoleSessionId(void);
 UINT GetWindowsDirectoryW(LPWSTR lpBuffer, UINT uSize);
+BOOL GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode);
+
+/* Job Objects */
+HANDLE CreateJobObjectW(void* lpJobAttributes, LPCWSTR lpName);
+BOOL AssignProcessToJobObject(HANDLE hJob, HANDLE hProcess);
+BOOL TerminateJobObject(HANDLE hJob, UINT uExitCode);
+BOOL SetInformationJobObject(HANDLE hJob, int JobObjectInfoClass, void* lpJobObjectInfo, DWORD cbJobObjectInfoLength);
 
 /* Module */
 HMODULE LoadLibraryW(LPCWSTR lpLibFileName);
@@ -196,6 +256,7 @@ DWORD GetFileType(HANDLE hFile);
 /* File Operations */
 BOOL CopyFileW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName, BOOL bFailIfExists);
 BOOL MoveFileExW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName, DWORD dwFlags);
+BOOL DeleteFileW(LPCWSTR lpFileName);
 BOOL CreateHardLinkW(LPCWSTR lpFileName, LPCWSTR lpExistingFileName, void* lpSecurityAttributes);
 BOOLEAN CreateSymbolicLinkW(LPCWSTR lpSymlinkFileName, LPCWSTR lpTargetFileName, DWORD dwFlags);
 DWORD GetShortPathNameW(LPCWSTR lpszLongPath, LPWSTR lpszShortPath, DWORD cchBuffer);
@@ -224,6 +285,11 @@ BOOL DeleteVolumeMountPointW(LPCWSTR lpszVolumeMountPoint);
 BOOL GetVolumeNameForVolumeMountPointW(LPCWSTR lpszVolumeMountPoint, LPWSTR lpszVolumeName, DWORD cchBufferLength);
 BOOL SetVolumeLabelW(LPCWSTR lpRootPathName, LPCWSTR lpVolumeName);
 
+/* Streams */
+HANDLE FindFirstStreamW(LPCWSTR lpFileName, STREAM_INFO_LEVELS InfoLevel, void* lpFindStreamData, DWORD dwFlags);
+BOOL FindNextStreamW(HANDLE hFindStream, void* lpFindStreamData);
+BOOL FindClose(HANDLE hFindFile);
+
 /* DOS Device Management */
 DWORD QueryDosDeviceW(LPCWSTR lpDeviceName, LPWSTR lpTargetPath, DWORD ucchMax);
 BOOL DefineDosDeviceW(DWORD dwFlags, LPCWSTR lpDeviceName, LPCWSTR lpTargetPath);
@@ -243,8 +309,7 @@ DWORD GetLastError(void);
 void SetLastError(DWORD dwErrCode);
 DWORD FormatMessageW(DWORD dwFlags, const void* lpSource, DWORD dwMessageId, DWORD dwLanguageId, LPWSTR lpBuffer, DWORD nSize, void* Arguments);
 
-/* --- Environment Expansion --- */
-DWORD ExpandEnvironmentStringsW(LPCWSTR lpSrc, LPWSTR lpDst, DWORD nSize);
+void GetSystemTimeAsFileTime(FILETIME* lpSystemTimeAsFileTime);
 ]]
 
 return ffi.load("kernel32")
