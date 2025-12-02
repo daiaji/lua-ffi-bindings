@@ -2,6 +2,15 @@ local ffi = require 'ffi'
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef[[
+    /* --- Base COM Interface --- */
+    typedef struct IUnknown IUnknown;
+    typedef struct IUnknownVtbl {
+        HRESULT (__stdcall *QueryInterface)(IUnknown *This, const IID* riid, void **ppvObject);
+        ULONG (__stdcall *AddRef)(IUnknown *This);
+        ULONG (__stdcall *Release)(IUnknown *This);
+    } IUnknownVtbl;
+    struct IUnknown { const IUnknownVtbl *lpVtbl; };
+
     /* --- VDS Types --- */
     typedef GUID VDS_OBJECT_ID;
     
