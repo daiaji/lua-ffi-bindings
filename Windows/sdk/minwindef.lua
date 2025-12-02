@@ -1,11 +1,10 @@
 local ffi = require 'ffi'
--- [FIX] Ensure size_t/ptrdiff_t are available
+-- [FIX] Ensure standard C types are available
 require 'ffi.req' 'c.stddef'
--- [FIX] Ensure C99 types (uint8_t, etc.) are available for winioctl/filesystem
 require 'ffi.req' 'c.stdint'
 
 ffi.cdef [[
-/* --- Basic Integer Types --- */
+/* --- Basic Types --- */
 typedef unsigned long DWORD;
 typedef int BOOL;
 typedef unsigned char BYTE;
@@ -14,8 +13,7 @@ typedef float FLOAT;
 typedef int INT;
 typedef unsigned int UINT;
 
-/* --- Extended Integers (BaseTsd.h) --- */
-/* [FIX] Added missing fixed-width Windows types (UINT8, INT32, etc.) */
+/* --- BaseTsd.h Fixed-Width Types (Fixes iphlpapi UINT8 errors) --- */
 typedef signed char         INT8, *PINT8;
 typedef short               INT16, *PINT16;
 typedef int                 INT32, *PINT32;
@@ -25,7 +23,7 @@ typedef unsigned short      UINT16, *PUINT16;
 typedef unsigned int        UINT32, *PUINT32;
 typedef unsigned __int64    UINT64, *PUINT64;
 
-/* --- Extended Integers (Legacy) --- */
+/* --- Extended Integers --- */
 typedef unsigned long ULONG;
 typedef unsigned short USHORT;
 typedef long LONG;
@@ -33,8 +31,10 @@ typedef unsigned long long ULONGLONG;
 typedef long long LONGLONG;
 typedef unsigned long long DWORD64;
 
-/* --- Pointer Types --- */
+/* --- Pointers & Handles --- */
 typedef void* HANDLE;
+typedef HANDLE *PHANDLE;
+typedef HANDLE *LPHANDLE;
 typedef void* HINSTANCE;
 typedef void* HMODULE;
 typedef void* HWND;
@@ -42,13 +42,9 @@ typedef void* HLOCAL;
 typedef void* HKEY;
 typedef void* PVOID;
 typedef void* LPVOID; 
-typedef void* PSID; /* [FIX] Added PSID */
+typedef void* PSID;
 
-/* [FIX] Added missing pointer-to-handle types */
-typedef HANDLE *PHANDLE;
-typedef HANDLE *LPHANDLE;
-
-/* [FIX] Added HRESULT */
+/* --- Return Codes --- */
 typedef LONG HRESULT;
 
 /* --- Pointers to Integers --- */
@@ -58,10 +54,8 @@ typedef ULONG *PULONG;
 typedef USHORT *PUSHORT;
 typedef unsigned char *PBYTE;
 typedef unsigned char *LPBYTE;
-typedef ULONG *PULONG;
-typedef USHORT *PUSHORT;
 
-/* --- Pointer-Sized Integers & Types --- */
+/* --- Pointer-Sized Integers --- */
 typedef size_t ULONG_PTR;
 typedef ptrdiff_t LONG_PTR;
 typedef size_t UINT_PTR;
@@ -75,14 +69,24 @@ typedef UINT_PTR WPARAM;
 typedef LONG_PTR LPARAM;
 typedef LONG_PTR LRESULT;
 
-/* --- Strings --- */
+/* --- Strings (ANSI/Wide/Generic) (Fixes PCHAR errors) --- */
+typedef char CHAR;
+typedef char *PCHAR;
+typedef char *LPSTR;
+typedef char *PSTR;
+typedef const char *LPCSTR;
+typedef const char *PCSTR;
+
 typedef wchar_t WCHAR;
-typedef wchar_t* LPWSTR;
-typedef wchar_t* LPTSTR;
-typedef const wchar_t* LPCWSTR;
-typedef char* LPSTR;
-typedef const char* LPCSTR;
-typedef WCHAR *PWSTR;
+typedef wchar_t *PWCHAR;
+typedef wchar_t *LPWSTR;
+typedef wchar_t *PWSTR;
+typedef wchar_t *LPTSTR;
+typedef const wchar_t *LPCWSTR;
+typedef const wchar_t *PCWSTR;
+
+typedef unsigned char UCHAR;
+typedef unsigned char *PUCHAR;
 typedef unsigned char BOOLEAN;
 
 /* --- Large Integers --- */
@@ -136,7 +140,7 @@ static const DWORD REG_RESOURCE_REQUIREMENTS_LIST = 10;
 static const DWORD REG_QWORD = 11;
 static const DWORD REG_QWORD_LITTLE_ENDIAN = 11;
 
-/* --- IO Counters (Shared) --- */
+/* --- IO Counters (Centralized Definition) --- */
 typedef struct _IO_COUNTERS {
     ULONGLONG ReadOperationCount;
     ULONGLONG WriteOperationCount;
