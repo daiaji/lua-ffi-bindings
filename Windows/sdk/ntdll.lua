@@ -4,35 +4,35 @@ require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
 /* --- NT Status Codes --- */
-static const uint32_t STATUS_SUCCESS = 0x00000000;
-static const uint32_t STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
-static const uint32_t STATUS_BUFFER_OVERFLOW = 0x80000005;
-static const uint32_t STATUS_BUFFER_TOO_SMALL = 0xC0000023;
-static const uint32_t STATUS_NO_MORE_ENTRIES = 0x8000001A;
-static const uint32_t STATUS_ACCESS_DENIED = 0xC0000022;
-static const uint32_t STATUS_INVALID_PARAMETER = 0xC000000D;
+static const ULONG STATUS_SUCCESS = 0x00000000;
+static const ULONG STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
+static const ULONG STATUS_BUFFER_OVERFLOW = 0x80000005;
+static const ULONG STATUS_BUFFER_TOO_SMALL = 0xC0000023;
+static const ULONG STATUS_NO_MORE_ENTRIES = 0x8000001A;
+static const ULONG STATUS_ACCESS_DENIED = 0xC0000022;
+static const ULONG STATUS_INVALID_PARAMETER = 0xC000000D;
 
 /* --- Memory Constants --- */
-static const uint32_t MEM_COMMIT      = 0x1000;
-static const uint32_t MEM_RESERVE     = 0x2000;
-static const uint32_t MEM_DECOMMIT    = 0x4000;
-static const uint32_t MEM_RELEASE     = 0x8000;
-static const uint32_t MEM_FREE        = 0x10000;
-static const uint32_t MEM_PRIVATE     = 0x20000;
-static const uint32_t MEM_MAPPED      = 0x40000;
-static const uint32_t MEM_IMAGE       = 0x1000000;
+static const ULONG MEM_COMMIT      = 0x1000;
+static const ULONG MEM_RESERVE     = 0x2000;
+static const ULONG MEM_DECOMMIT    = 0x4000;
+static const ULONG MEM_RELEASE     = 0x8000;
+static const ULONG MEM_FREE        = 0x10000;
+static const ULONG MEM_PRIVATE     = 0x20000;
+static const ULONG MEM_MAPPED      = 0x40000;
+static const ULONG MEM_IMAGE       = 0x1000000;
 
-static const uint32_t PAGE_NOACCESS          = 0x01;
-static const uint32_t PAGE_READONLY          = 0x02;
-static const uint32_t PAGE_READWRITE         = 0x04;
-static const uint32_t PAGE_WRITECOPY         = 0x08;
-static const uint32_t PAGE_EXECUTE           = 0x10;
-static const uint32_t PAGE_EXECUTE_READ      = 0x20;
-static const uint32_t PAGE_EXECUTE_READWRITE = 0x40;
-static const uint32_t PAGE_EXECUTE_WRITECOPY = 0x80;
-static const uint32_t PAGE_GUARD             = 0x100;
-static const uint32_t PAGE_NOCACHE           = 0x200;
-static const uint32_t PAGE_WRITECOMBINE      = 0x400;
+static const ULONG PAGE_NOACCESS          = 0x01;
+static const ULONG PAGE_READONLY          = 0x02;
+static const ULONG PAGE_READWRITE         = 0x04;
+static const ULONG PAGE_WRITECOPY         = 0x08;
+static const ULONG PAGE_EXECUTE           = 0x10;
+static const ULONG PAGE_EXECUTE_READ      = 0x20;
+static const ULONG PAGE_EXECUTE_READWRITE = 0x40;
+static const ULONG PAGE_EXECUTE_WRITECOPY = 0x80;
+static const ULONG PAGE_GUARD             = 0x100;
+static const ULONG PAGE_NOCACHE           = 0x200;
+static const ULONG PAGE_WRITECOMBINE      = 0x400;
 
 /* --- Basic Types --- */
 typedef SIZE_T *PSIZE_T;
