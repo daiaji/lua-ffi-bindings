@@ -1,8 +1,13 @@
 local ffi = require 'ffi'
--- MinWinDef defines basic types including SIZE_T, NTSTATUS, etc.
+-- MinWinDef defines basic types including SIZE_T, etc.
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
+/* --- Basic Types --- */
+typedef LONG NTSTATUS; /* [FIX] Added NTSTATUS definition */
+typedef SIZE_T *PSIZE_T;
+typedef LONG KPRIORITY;
+
 /* --- NT Status Codes --- */
 static const ULONG STATUS_SUCCESS = 0x00000000;
 static const ULONG STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
@@ -29,10 +34,6 @@ static const ULONG PAGE_EXECUTE_WRITECOPY = 0x80;
 static const ULONG PAGE_GUARD             = 0x100;
 static const ULONG PAGE_NOCACHE           = 0x200;
 static const ULONG PAGE_WRITECOMBINE      = 0x400;
-
-/* --- Basic Types --- */
-typedef SIZE_T *PSIZE_T;
-typedef LONG KPRIORITY;
 
 typedef struct _UNICODE_STRING {
     USHORT Length;
@@ -251,7 +252,7 @@ typedef struct _TOKEN_ELEVATION {
     DWORD TokenIsElevated;
 } TOKEN_ELEVATION;
 
-/* --- PEB & Process Basic Information (Fixes for win-utils/process) --- */
+/* --- PEB & Process Basic Information --- */
 typedef struct _PEB {
     BYTE Reserved1[2];
     BYTE BeingDebugged;
