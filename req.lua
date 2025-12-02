@@ -1,37 +1,53 @@
 --[[
-the number of files here that are solely used for splitting by os/arch is getting out of hand.
-so to fix this ...
-1) lots of tiny files in the root ffi/ folder that manually decide which os/arch subdir to use and require it
-2) I could make a new package.loader that searches through these folders
-3) custom-require (like luarocks does) ...
-4) I could modify the search path once at runtime to include multiple ffi/? locations ... but then I'd have to wedge another ffi/ into each sublocation in order to keep the require() paths from changing (i.e. ffi/, ffi/Linux/ffi/, ffi/Linux/x64/ffi/)
-- #4 I don't think I'll wedge in ffi/ subdir ... maybe someday I'll do the #2 ... for now it's #3 here:
+Custom require loader for FFI bindings to handle platform-specific paths.
+e.g. require 'ffi.req' 'Windows.sdk.kernel32' 
+     -> tries ffi.Windows.x64.Windows.sdk.kernel32
+     -> tries ffi.Windows.Windows.sdk.kernel32
+     -> tries ffi.Windows.sdk.kernel32
 --]]
 local ffi = require 'ffi'
 local assert = require 'ext.assert'
+
 return function(req)
 	assert.type(req, 'string')
-	-- first search $os/$arch/$req
-	-- then search $os/$req
-	-- (then search $arch/$req?)
-	-- then search $req
 	local errs = {}
-	for _,search in ipairs{
-		ffi.os..'.'..ffi.arch..'.'..req,
-		ffi.os..'.'..req,
-		ffi.arch..'.'..req,
-		req,
-	} do
+	
+	-- Prioritize specific to generic paths
+	local search_paths = {
+		ffi.os..'.'..ffi.arch..'.'..req, -- e.g. ffi.Windows.x64.Name
+		ffi.os..'.'..req,                -- e.g. ffi.Windows.Name
+		ffi.arch..'.'..req,              -- e.g. ffi.x64.Name
+		req,                             -- e.g. Name (or ffi.Name if caller included it)
+	}
+
+	for _, search in ipairs(search_paths) do
+		-- Force 'ffi.' prefix if not present, assuming bindings are in 'ffi' folder
+		local mod_name = search
+		if not mod_name:match("^ffi%.") then
+			mod_name = 'ffi.' .. mod_name
+		end
+
 		local found, result = xpcall(function()
-			return require('ffi.'..search)
+			return require(mod_name)
 		end, function(err)
 			return err..'\n'..debug.traceback()
 		end)
+
 		if found then
---DEBUG(ffi.req):print('ffi.req', req, search)
 			return result
+		else
+			local err_msg = tostring(result)
+			-- [CRITICAL FIX] Differentiate "Module Not Found" from "Syntax Error"
+			-- Lua's require returns a specific error message starting with "module '...' not found:" 
+			-- followed by a list of paths if the file is missing.
+			-- If the error is anything else (e.g., cdef parse error), it means the file WAS found but crashed.
+			if not err_msg:find("not found") and not err_msg:find("no field package.preload") then
+				-- File exists but has errors (Syntax/FFI error). Stop immediately and report!
+				error("FFI Binding Error in '"..mod_name.."':\n"..err_msg)
+			end
+			table.insert(errs, "Failed " .. mod_name .. ": " .. err_msg)
 		end
-		table.insert(errs, result)
 	end
-	error(table.concat(errs, '\n'))
+	
+	error("Could not load FFI binding '"..req.."'. Attempts:\n"..table.concat(errs, '\n'))
 end

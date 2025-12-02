@@ -1,46 +1,44 @@
 local ffi = require 'ffi'
--- stddef provides size_t, ptrdiff_t which represent pointer-sized integers
+-- Ensure size_t/ptrdiff_t are available
 require 'ffi.req' 'c.stddef'
 
 ffi.cdef [[
-/* MinWinDef.h Basic Types */
+/* --- Basic Integer Types --- */
 typedef unsigned long DWORD;
 typedef int BOOL;
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef float FLOAT;
+typedef int INT;
+typedef unsigned int UINT;
+
+/* --- Pointer Types --- */
 typedef void* HANDLE;
 typedef void* HINSTANCE;
 typedef void* HMODULE;
 typedef void* HWND;
 typedef void* HLOCAL;
-typedef long HRESULT;
 typedef void* HKEY;
+typedef void* PVOID;
+typedef void* LPVOID; 
 
-/* Common Pointer Types */
+/* --- Pointers to Integers --- */
 typedef DWORD *PDWORD;
 typedef DWORD *LPDWORD;
-typedef void *LPVOID;
-typedef const void *LPCVOID;
-
-/* Integer Types */
-typedef unsigned int UINT;
-typedef int INT;
-typedef void* PVOID;
-// LPVOID is defined above
-
-typedef unsigned long ULONG;
-typedef unsigned long *PULONG;
-typedef unsigned short USHORT;
-typedef unsigned short *PUSHORT;
+typedef ULONG *PULONG;
+typedef USHORT *PUSHORT;
 typedef unsigned char *PBYTE;
 typedef unsigned char *LPBYTE;
+
+/* --- Extended Integers --- */
+typedef unsigned long ULONG;
+typedef unsigned short USHORT;
 typedef long LONG;
 typedef unsigned long long ULONGLONG;
 typedef long long LONGLONG;
 typedef unsigned long long DWORD64;
 
-/* Pointer Sized Types */
+/* --- Pointer-Sized Integers & Types --- */
 typedef size_t ULONG_PTR;
 typedef ptrdiff_t LONG_PTR;
 typedef size_t UINT_PTR;
@@ -49,56 +47,44 @@ typedef ULONG_PTR DWORD_PTR;
 typedef size_t SIZE_T;
 typedef ptrdiff_t SSIZE_T;
 
-/* Message Parameters */
+/* --- Message Params --- */
 typedef UINT_PTR WPARAM;
 typedef LONG_PTR LPARAM;
 typedef LONG_PTR LRESULT;
 
-/* WinNT.h Strings */
+/* --- Strings --- */
+typedef wchar_t WCHAR;
+typedef wchar_t* LPWSTR;
 typedef wchar_t* LPTSTR;
 typedef const wchar_t* LPCWSTR;
 typedef char* LPSTR;
 typedef const char* LPCSTR;
-typedef unsigned char BOOLEAN;
-typedef wchar_t* LPWSTR;
-typedef wchar_t WCHAR;
 typedef WCHAR *PWSTR;
+typedef unsigned char BOOLEAN;
 
-/* 64-bit Integer Unions */
+/* --- Large Integers --- */
 typedef union _LARGE_INTEGER {
-    struct {
-        DWORD LowPart;
-        LONG HighPart;
-    } u;
+    struct { DWORD LowPart; LONG HighPart; } u;
     LONGLONG QuadPart;
 } LARGE_INTEGER, *PLARGE_INTEGER;
 
 typedef union _ULARGE_INTEGER {
-    struct {
-        DWORD LowPart;
-        DWORD HighPart;
-    } u;
+    struct { DWORD LowPart; DWORD HighPart; } u;
     ULONGLONG QuadPart;
 } ULARGE_INTEGER, *PULARGE_INTEGER;
 
-/* Time Structures */
+/* --- Time --- */
 typedef struct _FILETIME {
     DWORD dwLowDateTime;
     DWORD dwHighDateTime;
 } FILETIME, *PFILETIME, *LPFILETIME;
 
 typedef struct _SYSTEMTIME {
-    WORD wYear;
-    WORD wMonth;
-    WORD wDayOfWeek;
-    WORD wDay;
-    WORD wHour;
-    WORD wMinute;
-    WORD wSecond;
-    WORD wMilliseconds;
+    WORD wYear; WORD wMonth; WORD wDayOfWeek; WORD wDay;
+    WORD wHour; WORD wMinute; WORD wSecond; WORD wMilliseconds;
 } SYSTEMTIME, *PSYSTEMTIME, *LPSYSTEMTIME;
 
-/* GUID/UUID Support */
+/* --- GUID --- */
 typedef struct _GUID {
     unsigned long  Data1;
     unsigned short Data2;
@@ -111,7 +97,7 @@ typedef const GUID* REFGUID;
 typedef const IID* REFIID;
 typedef const CLSID* REFCLSID;
 
-/* --- [MOVED] Registry Constants (From winnt.h) --- */
+/* --- Registry Constants --- */
 static const DWORD REG_NONE = 0;
 static const DWORD REG_SZ = 1;
 static const DWORD REG_EXPAND_SZ = 2;

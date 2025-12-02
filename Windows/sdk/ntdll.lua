@@ -1,4 +1,5 @@
 local ffi = require 'ffi'
+-- MinWinDef defines basic types including SIZE_T, NTSTATUS, etc.
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
@@ -34,7 +35,6 @@ static const int PAGE_NOCACHE           = 0x200;
 static const int PAGE_WRITECOMBINE      = 0x400;
 
 /* --- Basic Types --- */
-/* SIZE_T is now defined in minwindef.lua */
 typedef SIZE_T *PSIZE_T;
 
 typedef struct _UNICODE_STRING {
@@ -64,7 +64,6 @@ typedef enum _PROCESSINFOCLASS {
     ProcessHandleInformation = 51
 } PROCESSINFOCLASS;
 
-/* --- [NEW] Memory Information Class --- */
 typedef enum _MEMORY_INFORMATION_CLASS {
     MemoryBasicInformation = 0,
     MemoryWorkingSetInformation = 1,
@@ -159,12 +158,11 @@ typedef struct _PROCESS_HANDLE_SNAPSHOT_INFORMATION {
     PROCESS_HANDLE_TABLE_ENTRY_INFO Handles[1];
 } PROCESS_HANDLE_SNAPSHOT_INFORMATION;
 
-/* --- [NEW] Memory Basic Information --- */
+/* --- Memory Basic Information --- */
 typedef struct _MEMORY_BASIC_INFORMATION {
     PVOID BaseAddress;
     PVOID AllocationBase;
     DWORD AllocationProtect;
-    // Padding implicit on x64
     SIZE_T RegionSize;
     DWORD State;
     DWORD Protect;
@@ -298,7 +296,6 @@ long __stdcall NtQueryInformationToken(
     PULONG ReturnLength
 );
 
-/* --- [NEW] Process Control & Memory --- */
 long __stdcall NtSuspendProcess(HANDLE ProcessHandle);
 long __stdcall NtResumeProcess(HANDLE ProcessHandle);
 
