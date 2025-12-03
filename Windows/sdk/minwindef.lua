@@ -44,6 +44,12 @@ typedef void* PVOID;
 typedef void* LPVOID; 
 typedef void* PSID;
 
+/* --- Security Types [FIXED: Added missing types for ntdll/ntext] --- */
+typedef DWORD ACCESS_MASK;
+typedef ACCESS_MASK *PACCESS_MASK;
+typedef DWORD SECURITY_INFORMATION;
+typedef SECURITY_INFORMATION *PSECURITY_INFORMATION;
+
 /* --- Return Codes --- */
 typedef LONG HRESULT;
 

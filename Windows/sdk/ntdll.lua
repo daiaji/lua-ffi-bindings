@@ -64,6 +64,15 @@ static const ULONG OBJ_KERNEL_HANDLE       = 0x00000200;
 static const ULONG OBJ_FORCE_ACCESS_CHECK  = 0x00000400;
 static const ULONG OBJ_VALID_ATTRIBUTES    = 0x000007F2;
 
+/* --- IO Status Block [FIXED: Added for NtSetInformationFile] --- */
+typedef struct _IO_STATUS_BLOCK {
+    union {
+        NTSTATUS Status;
+        PVOID Pointer;
+    };
+    ULONG_PTR Information;
+} IO_STATUS_BLOCK, *PIO_STATUS_BLOCK;
+
 /* --- Information Classes --- */
 typedef enum _SYSTEM_INFORMATION_CLASS {
     SystemBasicInformation = 0,
@@ -407,6 +416,15 @@ long __stdcall NtQueryVirtualMemory(
     PVOID MemoryInformation,
     SIZE_T MemoryInformationLength,
     PSIZE_T ReturnLength
+);
+
+/* --- File/IO Native APIs [FIXED: Added] --- */
+NTSTATUS NtSetInformationFile(
+    HANDLE FileHandle,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID FileInformation,
+    ULONG Length,
+    ULONG FileInformationClass
 );
 
 /* --- Registry Native APIs --- */
