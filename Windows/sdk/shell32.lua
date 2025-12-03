@@ -38,6 +38,9 @@ ffi.cdef [[
 
     int SHFileOperationW(SHFILEOPSTRUCTW* lpFileOp);
 
+    /* --- [FIX] Moved from user32.lua (Correct DLL) --- */
+    void SHChangeNotify(LONG wEventId, UINT uFlags, LPCVOID dwItem1, LPCVOID dwItem2);
+
     // Browse Folder
     typedef int (__stdcall *BFFCALLBACK)(HWND, UINT, LPARAM, LPARAM);
     typedef struct _SHITEMID { WORD cb; BYTE abID[1]; } SHITEMID;

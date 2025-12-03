@@ -42,6 +42,7 @@ typedef void* HLOCAL;
 typedef void* HKEY;
 typedef void* PVOID;
 typedef void* LPVOID; 
+typedef const void *LPCVOID; /* [FIX] Added LPCVOID for user32/shell32 APIs */
 typedef void* PSID;
 
 /* --- Status & Security Types --- */

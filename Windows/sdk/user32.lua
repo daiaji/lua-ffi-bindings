@@ -110,8 +110,7 @@ ffi.cdef [[
     static const UINT SPIF_UPDATEINIFILE = 0x01;
     static const UINT SPIF_SENDWININICHANGE = 0x02;
 
-    /* --- [NEW] Shell Notification --- */
-    void SHChangeNotify(LONG wEventId, UINT uFlags, LPCVOID dwItem1, LPCVOID dwItem2);
+    /* --- [FIX] SHChangeNotify removed (moved to shell32.lua) --- */
 
     BOOL SystemParametersInfoW(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni);
 ]]
