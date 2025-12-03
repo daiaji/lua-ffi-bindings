@@ -44,7 +44,12 @@ typedef void* PVOID;
 typedef void* LPVOID; 
 typedef void* PSID;
 
-/* --- Security Types [FIXED: Added missing types for ntdll/ntext] --- */
+/* --- Status & Security Types --- */
+/* [FIX] Moved NTSTATUS here to prevent dependency loops between ntdll/ntext */
+typedef LONG NTSTATUS;
+typedef NTSTATUS *PNTSTATUS;
+
+/* [FIX] Added missing security types for ntdll/ntext */
 typedef DWORD ACCESS_MASK;
 typedef ACCESS_MASK *PACCESS_MASK;
 typedef DWORD SECURITY_INFORMATION;

@@ -1,10 +1,9 @@
 local ffi = require 'ffi'
--- MinWinDef defines basic types including SIZE_T, etc.
+-- MinWinDef defines basic types including SIZE_T, NTSTATUS, etc.
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
 /* --- Basic Types --- */
-typedef LONG NTSTATUS;
 typedef SIZE_T *PSIZE_T;
 typedef LONG KPRIORITY;
 
