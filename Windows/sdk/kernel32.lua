@@ -184,6 +184,23 @@ typedef struct _WIN32_FIND_STREAM_DATA {
     WCHAR         cStreamName[296]; // MAX_PATH + 36
 } WIN32_FIND_STREAM_DATA;
 
+/* [NEW] Recursive Delete Helpers */
+typedef struct _WIN32_FIND_DATAW {
+    DWORD dwFileAttributes;
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
+    DWORD dwReserved0;
+    DWORD dwReserved1;
+    WCHAR cFileName[260];
+    WCHAR cAlternateFileName[14];
+    DWORD dwFileType; // Obsolete
+    DWORD dwCreatorType; // Obsolete
+    WORD  wFinderFlags; // Obsolete
+} WIN32_FIND_DATAW, *PWIN32_FIND_DATAW, *LPWIN32_FIND_DATAW;
+
 /* --- API Functions --- */
 BOOL CloseHandle(HANDLE hObject);
 
@@ -260,6 +277,11 @@ BOOL CreateDirectoryW(LPCWSTR lpPathName, void* lpSecurityAttributes);
 BOOL RemoveDirectoryW(LPCWSTR lpPathName);
 DWORD GetFullPathNameW(LPCWSTR lpFileName, DWORD nBufferLength, LPWSTR lpBuffer, LPWSTR* lpFilePart);
 
+/* Directory Iteration */
+HANDLE FindFirstFileW(LPCWSTR lpFileName, WIN32_FIND_DATAW* lpFindFileData);
+BOOL FindNextFileW(HANDLE hFindFile, WIN32_FIND_DATAW* lpFindFileData);
+BOOL FindClose(HANDLE hFindFile);
+
 /* Volume & Drive Info */
 DWORD GetFileAttributesW(LPCWSTR lpFileName);
 BOOL SetFileAttributesW(LPCWSTR lpFileName, DWORD dwFileAttributes);
@@ -281,7 +303,6 @@ BOOL SetVolumeLabelW(LPCWSTR lpRootPathName, LPCWSTR lpVolumeName);
 /* Streams */
 HANDLE FindFirstStreamW(LPCWSTR lpFileName, STREAM_INFO_LEVELS InfoLevel, void* lpFindStreamData, DWORD dwFlags);
 BOOL FindNextStreamW(HANDLE hFindStream, void* lpFindStreamData);
-BOOL FindClose(HANDLE hFindFile);
 
 /* DOS Device Management */
 DWORD QueryDosDeviceW(LPCWSTR lpDeviceName, LPWSTR lpTargetPath, DWORD ucchMax);
