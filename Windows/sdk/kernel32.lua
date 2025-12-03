@@ -76,19 +76,31 @@ static const DWORD OPEN_ALWAYS = 4;
 static const DWORD TRUNCATE_EXISTING = 5;
 
 /* --- File Attributes & Flags --- */
-static const DWORD FILE_ATTRIBUTE_NORMAL = 0x00000080;
+static const DWORD FILE_ATTRIBUTE_READONLY = 0x00000001;
+static const DWORD FILE_ATTRIBUTE_HIDDEN = 0x00000002;
+static const DWORD FILE_ATTRIBUTE_SYSTEM = 0x00000004;
 static const DWORD FILE_ATTRIBUTE_DIRECTORY = 0x00000010;
+static const DWORD FILE_ATTRIBUTE_ARCHIVE = 0x00000020;
+static const DWORD FILE_ATTRIBUTE_DEVICE = 0x00000040;
+static const DWORD FILE_ATTRIBUTE_NORMAL = 0x00000080;
+static const DWORD FILE_ATTRIBUTE_TEMPORARY = 0x00000100;
+static const DWORD FILE_ATTRIBUTE_SPARSE_FILE = 0x00000200;
 static const DWORD FILE_ATTRIBUTE_REPARSE_POINT = 0x00000400;
+static const DWORD FILE_ATTRIBUTE_COMPRESSED = 0x00000800;
+static const DWORD FILE_ATTRIBUTE_OFFLINE = 0x00001000;
+static const DWORD FILE_ATTRIBUTE_NOT_CONTENT_INDEXED = 0x00002000;
+static const DWORD FILE_ATTRIBUTE_ENCRYPTED = 0x00004000;
+
 static const DWORD FILE_FLAG_NO_BUFFERING = 0x20000000;
 static const DWORD FILE_FLAG_WRITE_THROUGH = 0x80000000;
+static const DWORD FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
+static const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x00200000;
 
 /* --- File & Disposition Constants --- */
 static const DWORD DELETE = 0x00010000;
 static const DWORD FILE_SHARE_READ = 0x00000001;
 static const DWORD FILE_SHARE_WRITE = 0x00000002;
 static const DWORD FILE_SHARE_DELETE = 0x00000004;
-static const DWORD FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
-static const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x00200000;
 
 /* --- DefineDosDevice Flags --- */
 static const DWORD DDD_RAW_TARGET_PATH = 0x00000001;
@@ -267,6 +279,7 @@ DWORD GetFileType(HANDLE hFile);
 BOOL CopyFileW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName, BOOL bFailIfExists);
 BOOL MoveFileExW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName, DWORD dwFlags);
 BOOL DeleteFileW(LPCWSTR lpFileName);
+BOOL SetFileAttributesW(LPCWSTR lpFileName, DWORD dwFileAttributes);
 BOOL CreateHardLinkW(LPCWSTR lpFileName, LPCWSTR lpExistingFileName, void* lpSecurityAttributes);
 BOOLEAN CreateSymbolicLinkW(LPCWSTR lpSymlinkFileName, LPCWSTR lpTargetFileName, DWORD dwFlags);
 DWORD GetShortPathNameW(LPCWSTR lpszLongPath, LPWSTR lpszShortPath, DWORD cchBuffer);
@@ -284,7 +297,6 @@ BOOL FindClose(HANDLE hFindFile);
 
 /* Volume & Drive Info */
 DWORD GetFileAttributesW(LPCWSTR lpFileName);
-BOOL SetFileAttributesW(LPCWSTR lpFileName, DWORD dwFileAttributes);
 DWORD GetLogicalDrives(void);
 UINT GetDriveTypeW(LPCWSTR lpRootPathName);
 BOOL GetDiskFreeSpaceExW(LPCWSTR lpDirectoryName, ULARGE_INTEGER* lpFreeBytesAvailableToCaller, ULARGE_INTEGER* lpTotalNumberOfBytes, ULARGE_INTEGER* lpTotalNumberOfFreeBytes);
