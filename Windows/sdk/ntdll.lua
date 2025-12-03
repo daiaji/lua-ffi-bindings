@@ -4,7 +4,7 @@ require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
 /* --- Basic Types --- */
-typedef LONG NTSTATUS; /* [FIX] Added NTSTATUS definition */
+typedef LONG NTSTATUS;
 typedef SIZE_T *PSIZE_T;
 typedef LONG KPRIORITY;
 
@@ -16,6 +16,8 @@ static const ULONG STATUS_BUFFER_TOO_SMALL = 0xC0000023;
 static const ULONG STATUS_NO_MORE_ENTRIES = 0x8000001A;
 static const ULONG STATUS_ACCESS_DENIED = 0xC0000022;
 static const ULONG STATUS_INVALID_PARAMETER = 0xC000000D;
+static const ULONG STATUS_PRIVILEGE_NOT_HELD = 0xC0000061;
+static const ULONG STATUS_VARIABLE_NOT_FOUND = 0xC0000034; /* [NEW] */
 
 /* --- Memory Constants --- */
 static const ULONG MEM_DECOMMIT    = 0x4000;
@@ -35,11 +37,32 @@ static const ULONG PAGE_GUARD             = 0x100;
 static const ULONG PAGE_NOCACHE           = 0x200;
 static const ULONG PAGE_WRITECOMBINE      = 0x400;
 
+/* --- Strings & Attributes --- */
 typedef struct _UNICODE_STRING {
     USHORT Length;
     USHORT MaximumLength;
     PWSTR  Buffer;
 } UNICODE_STRING, *PUNICODE_STRING;
+
+typedef struct _OBJECT_ATTRIBUTES {
+    ULONG Length;
+    HANDLE RootDirectory;
+    PUNICODE_STRING ObjectName;
+    ULONG Attributes;
+    PVOID SecurityDescriptor;
+    PVOID SecurityQualityOfService;
+} OBJECT_ATTRIBUTES, *POBJECT_ATTRIBUTES;
+
+/* Object Attributes Flags */
+static const ULONG OBJ_INHERIT             = 0x00000002;
+static const ULONG OBJ_PERMANENT           = 0x00000010;
+static const ULONG OBJ_EXCLUSIVE           = 0x00000020;
+static const ULONG OBJ_CASE_INSENSITIVE    = 0x00000040;
+static const ULONG OBJ_OPENIF              = 0x00000080;
+static const ULONG OBJ_OPENLINK            = 0x00000100;
+static const ULONG OBJ_KERNEL_HANDLE       = 0x00000200;
+static const ULONG OBJ_FORCE_ACCESS_CHECK  = 0x00000400;
+static const ULONG OBJ_VALID_ATTRIBUTES    = 0x000007F2;
 
 /* --- Information Classes --- */
 typedef enum _SYSTEM_INFORMATION_CLASS {
@@ -70,6 +93,46 @@ typedef enum _MEMORY_INFORMATION_CLASS {
     MemoryWorkingSetExInformation = 4
 } MEMORY_INFORMATION_CLASS;
 
+/* --- Power Management Types --- */
+typedef enum _POWER_ACTION {
+    PowerActionNone = 0,
+    PowerActionReserved,
+    PowerActionSleep,
+    PowerActionHibernate,
+    PowerActionShutdown,
+    PowerActionShutdownReset,
+    PowerActionShutdownOff,
+    PowerActionWarmEject
+} POWER_ACTION;
+
+typedef enum _SYSTEM_POWER_STATE {
+    PowerSystemUnspecified = 0,
+    PowerSystemWorking,
+    PowerSystemSleeping1,
+    PowerSystemSleeping2,
+    PowerSystemSleeping3,
+    PowerSystemHibernate,
+    PowerSystemShutdown,
+    PowerSystemMaximum
+} SYSTEM_POWER_STATE;
+
+typedef enum _SHUTDOWN_ACTION {
+    ShutdownNoReboot,
+    ShutdownReboot,
+    ShutdownPowerOff
+} SHUTDOWN_ACTION;
+
+/* Power Action Flags */
+static const ULONG POWER_ACTION_QUERY_ALLOWED   = 0x00000001;
+static const ULONG POWER_ACTION_UI_ALLOWED      = 0x00000002;
+static const ULONG POWER_ACTION_OVERRIDE_APPS   = 0x00000004;
+static const ULONG POWER_ACTION_CRITICAL        = 0x80000000;
+
+/* --- [NEW] UEFI/Firmware Constants --- */
+static const ULONG EFI_VARIABLE_NON_VOLATILE = 0x00000001;
+static const ULONG EFI_VARIABLE_BOOTSERVICE_ACCESS = 0x00000002;
+static const ULONG EFI_VARIABLE_RUNTIME_ACCESS = 0x00000004;
+
 /* --- VM Counters --- */
 typedef struct _VM_COUNTERS {
     SIZE_T PeakVirtualSize;
@@ -84,8 +147,6 @@ typedef struct _VM_COUNTERS {
     SIZE_T PagefileUsage;
     SIZE_T PeakPagefileUsage;
 } VM_COUNTERS;
-
-/* [FIX] IO_COUNTERS is defined in minwindef.lua */
 
 /* --- Client ID --- */
 typedef struct _CLIENT_ID {
@@ -346,6 +407,76 @@ long __stdcall NtQueryVirtualMemory(
     PVOID MemoryInformation,
     SIZE_T MemoryInformationLength,
     PSIZE_T ReturnLength
+);
+
+/* --- Registry Native APIs --- */
+long __stdcall NtLoadKey(
+    POBJECT_ATTRIBUTES TargetKey,
+    POBJECT_ATTRIBUTES SourceFile
+);
+
+long __stdcall NtLoadKeyEx(
+    POBJECT_ATTRIBUTES TargetKey,
+    POBJECT_ATTRIBUTES SourceFile,
+    ULONG Flags,
+    HANDLE TrustClassKey,
+    HANDLE Event,
+    ACCESS_MASK DesiredAccess,
+    PHANDLE RootHandle,
+    PVOID Reserved
+);
+
+long __stdcall NtUnloadKey(
+    POBJECT_ATTRIBUTES TargetKey
+);
+
+long __stdcall NtSaveKey(
+    HANDLE KeyHandle,
+    HANDLE FileHandle
+);
+
+/* --- Power Management Native APIs --- */
+long __stdcall NtInitiatePowerAction(
+    POWER_ACTION SystemAction,
+    SYSTEM_POWER_STATE LightestSystemState,
+    ULONG Flags,
+    BOOLEAN Asynchronous
+);
+
+long __stdcall NtShutdownSystem(
+    SHUTDOWN_ACTION Action
+);
+
+long __stdcall NtSetSystemPowerState(
+    POWER_ACTION SystemAction,
+    SYSTEM_POWER_STATE LightestSystemState,
+    ULONG Flags
+);
+
+/* --- Driver Loading Native APIs --- */
+long __stdcall NtLoadDriver(
+    POBJECT_ATTRIBUTES DriverServiceName
+);
+
+long __stdcall NtUnloadDriver(
+    POBJECT_ATTRIBUTES DriverServiceName
+);
+
+/* --- [NEW] System Environment (UEFI) APIs --- */
+long __stdcall NtQuerySystemEnvironmentValueEx(
+    PUNICODE_STRING VariableName,
+    const GUID* VendorGuid,
+    PVOID Buffer,
+    PULONG ValueLength,
+    PULONG Attributes
+);
+
+long __stdcall NtSetSystemEnvironmentValueEx(
+    PUNICODE_STRING VariableName,
+    const GUID* VendorGuid,
+    PVOID Buffer,
+    ULONG BufferLength,
+    ULONG Attributes
 );
 ]]
 

@@ -6,7 +6,7 @@ ffi.cdef [[
     void PostQuitMessage(int nExitCode);
     int MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, unsigned int uType);
 
-    /* --- [FIX] Constants for ShowWindow (SW_*) --- */
+    /* --- Constants for ShowWindow (SW_*) --- */
     static const int SW_HIDE = 0;
     static const int SW_SHOWNORMAL = 1;
     static const int SW_SHOWMINIMIZED = 2;
@@ -64,6 +64,56 @@ ffi.cdef [[
     static const UINT MOD_SHIFT = 0x0004;
     static const UINT MOD_WIN = 0x0008;
     static const UINT MOD_NOREPEAT = 0x4000;
+
+    /* --- [NEW] Display Settings (Legacy) --- */
+    typedef struct _devicemodeW {
+        WCHAR dmDeviceName[32];
+        WORD dmSpecVersion;
+        WORD dmDriverVersion;
+        WORD dmSize;
+        WORD dmDriverExtra;
+        DWORD dmFields;
+        union {
+            struct { short dmOrientation; short dmPaperSize; short dmPaperLength; short dmPaperWidth; short dmScale; short dmCopies; short dmDefaultSource; short dmPrintQuality; };
+            struct { DWORD dmPositionX; DWORD dmPositionY; DWORD dmDisplayOrientation; DWORD dmDisplayFixedOutput; };
+        };
+        short dmColor;
+        short dmDuplex;
+        short dmYResolution;
+        short dmTTOption;
+        short dmCollate;
+        WCHAR dmFormName[32];
+        WORD dmLogPixels;
+        DWORD dmBitsPerPel;
+        DWORD dmPelsWidth;
+        DWORD dmPelsHeight;
+        union {
+            DWORD dmDisplayFlags;
+            DWORD dmNup;
+        };
+        DWORD dmDisplayFrequency;
+        DWORD dmICMMethod;
+        DWORD dmICMIntent;
+        DWORD dmMediaType;
+        DWORD dmDitherType;
+        DWORD dmReserved1;
+        DWORD dmReserved2;
+        DWORD dmPanningWidth;
+        DWORD dmPanningHeight;
+    } DEVMODEW, *PDEVMODEW;
+
+    BOOL EnumDisplaySettingsW(LPCWSTR lpszDeviceName, DWORD iModeNum, PDEVMODEW lpDevMode);
+    LONG ChangeDisplaySettingsExW(LPCWSTR lpszDeviceName, PDEVMODEW lpDevMode, HWND hwnd, DWORD dwflags, LPVOID lParam);
+
+    /* --- [NEW] Desktop / Wallpaper --- */
+    static const UINT SPI_SETDESKWALLPAPER = 0x0014;
+    static const UINT SPIF_UPDATEINIFILE = 0x01;
+    static const UINT SPIF_SENDWININICHANGE = 0x02;
+
+    /* --- [NEW] Shell Notification --- */
+    void SHChangeNotify(LONG wEventId, UINT uFlags, LPCVOID dwItem1, LPCVOID dwItem2);
+
+    BOOL SystemParametersInfoW(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni);
 ]]
 
 return ffi.load("user32")
