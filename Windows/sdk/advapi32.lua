@@ -142,6 +142,17 @@ LONG RegSetValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD Reserved, DWORD dwType
 LONG RegDeleteValueW(HKEY hKey, LPCWSTR lpValueName);
 LONG RegDeleteKeyW(HKEY hKey, LPCWSTR lpSubKey);
 LONG RegEnumKeyExW(HKEY hKey, DWORD dwIndex, LPWSTR lpName, DWORD* lpcchName, DWORD* lpReserved, LPWSTR lpClass, DWORD* lpcchClass, FILETIME* lpftLastWriteTime);
+
+/* [NEW] ACL / Security */
+DWORD SetNamedSecurityInfoW(
+    LPWSTR pObjectName,
+    int ObjectType,
+    DWORD SecurityInfo,
+    PSID psidOwner,
+    PSID psidGroup,
+    PSECURITY_DESCRIPTOR pDacl,
+    PSECURITY_DESCRIPTOR pSacl
+);
 ]]
 
 return ffi.load("advapi32")

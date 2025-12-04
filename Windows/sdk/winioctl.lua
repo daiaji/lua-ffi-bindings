@@ -97,7 +97,23 @@ ffi.cdef[[
         };
     } PARTITION_INFORMATION_EX;
 
-    /* Standard struct has PartitionEntry[1], Rufus uses a larger buffer to be safe */
+    /* [NEW] Standard DRIVE_LAYOUT_INFORMATION_EX */
+    typedef struct _DRIVE_LAYOUT_INFORMATION_EX {
+        DWORD PartitionStyle;
+        DWORD PartitionCount;
+        union {
+            struct { DWORD Signature; DWORD CheckSum; } Mbr;
+            struct {
+                GUID DiskId;
+                LARGE_INTEGER StartingUsableOffset;
+                LARGE_INTEGER UsableLength;
+                DWORD MaxPartitionCount;
+            } Gpt;
+        };
+        PARTITION_INFORMATION_EX PartitionEntry[1];
+    } DRIVE_LAYOUT_INFORMATION_EX;
+
+    /* Extended version for FFI allocation */
     typedef struct _DRIVE_LAYOUT_INFORMATION_EX_FULL {
         DWORD           PartitionStyle;
         DWORD           PartitionCount;

@@ -346,6 +346,21 @@ typedef struct _RTL_USER_PROCESS_PARAMETERS {
     UNICODE_STRING CommandLine;
 } RTL_USER_PROCESS_PARAMETERS;
 
+/* --- [NEW] File Directory Information (Moved from win-utils/fs/init.lua) --- */
+typedef struct _FILE_DIRECTORY_INFORMATION {
+    ULONG NextEntryOffset;
+    ULONG FileIndex;
+    LARGE_INTEGER CreationTime;
+    LARGE_INTEGER LastAccessTime;
+    LARGE_INTEGER LastWriteTime;
+    LARGE_INTEGER ChangeTime;
+    LARGE_INTEGER EndOfFile;
+    LARGE_INTEGER AllocationSize;
+    ULONG FileAttributes;
+    ULONG FileNameLength;
+    WCHAR FileName[1];
+} FILE_DIRECTORY_INFORMATION, *PFILE_DIRECTORY_INFORMATION;
+
 /* --- API Functions --- */
 long __stdcall NtQuerySystemInformation(
     SYSTEM_INFORMATION_CLASS SystemInformationClass,
@@ -422,6 +437,21 @@ NTSTATUS NtSetInformationFile(
     PVOID FileInformation,
     ULONG Length,
     ULONG FileInformationClass
+);
+
+/* [NEW] Directory Query API */
+NTSTATUS NtQueryDirectoryFile(
+    HANDLE FileHandle,
+    HANDLE Event,
+    PVOID ApcRoutine,
+    PVOID ApcContext,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    PVOID FileInformation,
+    ULONG Length,
+    int FileInformationClass,
+    BOOLEAN ReturnSingleEntry,
+    PUNICODE_STRING FileName,
+    BOOLEAN RestartScan
 );
 
 /* --- Registry Native APIs --- */
