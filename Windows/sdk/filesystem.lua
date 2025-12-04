@@ -2,7 +2,7 @@ local ffi = require 'ffi'
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
-    /* [NEW] FAT32 Boot Sector */
+    /* --- FAT32 Structures --- */
     #pragma pack(1)
     typedef struct {
         uint8_t  JumpBoot[3];

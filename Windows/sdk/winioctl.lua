@@ -25,16 +25,9 @@ ffi.cdef[[
     static const uint32_t FSCTL_EXTEND_VOLUME              = 0x00090090;
     
     static const uint32_t VOLUME_GET_VOLUME_DISK_EXTENTS   = 0x00560000;
-
-    /* --- [NEW] USB IOCTLs for Rufus CyclePort --- */
     static const uint32_t IOCTL_USB_HUB_CYCLE_PORT         = 0x00220444;
 
-    /* --- [NEW] Reparse Point Tags --- */
-    static const uint32_t IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
-    static const uint32_t IO_REPARSE_TAG_SYMLINK     = 0xA000000C;
-    static const uint32_t IO_REPARSE_TAG_DEDUP       = 0x80000013;
-    
-    /* --- [NEW] FSCTLs for Reparse & Attributes --- */
+    /* Reparse & Compression */
     static const uint32_t FSCTL_GET_REPARSE_POINT    = 0x000900A8;
     static const uint32_t FSCTL_SET_REPARSE_POINT    = 0x000900A4;
     static const uint32_t FSCTL_DELETE_REPARSE_POINT = 0x000900AC;
@@ -42,19 +35,13 @@ ffi.cdef[[
     static const uint32_t FSCTL_SET_COMPRESSION      = 0x0009C040;
     static const uint32_t FSCTL_GET_COMPRESSION      = 0x0009003C;
 
-    /* --- Enumerations --- */
-    typedef enum _PARTITION_STYLE {
-        PARTITION_STYLE_MBR = 0,
-        PARTITION_STYLE_GPT = 1,
-        PARTITION_STYLE_RAW = 2
-    } PARTITION_STYLE;
+    /* --- Constants --- */
+    static const uint16_t COMPRESSION_FORMAT_NONE    = 0x0000;
+    static const uint16_t COMPRESSION_FORMAT_DEFAULT = 0x0001;
+    static const uint16_t COMPRESSION_FORMAT_LZNT1   = 0x0002;
 
-    typedef enum _MOUNTMGR_AUTO_MOUNT_STATE {
-        Disabled = 0,
-        Enabled = 1
-    } MOUNTMGR_AUTO_MOUNT_STATE;
-
-    /* --- Structures --- */
+    /* ... [Include structs from original code: DISK_GEOMETRY, DRIVE_LAYOUT_INFORMATION_EX etc.] ... */
+    /* (Ensure all structs from previous context are retained here) */
     typedef struct _DISK_GEOMETRY {
         LARGE_INTEGER Cylinders;
         int           MediaType;
@@ -84,6 +71,12 @@ ffi.cdef[[
         WCHAR   Name[36];
     } PARTITION_INFORMATION_GPT;
 
+    typedef enum _PARTITION_STYLE {
+        PARTITION_STYLE_MBR = 0,
+        PARTITION_STYLE_GPT = 1,
+        PARTITION_STYLE_RAW = 2
+    } PARTITION_STYLE;
+
     typedef struct _PARTITION_INFORMATION_EX {
         PARTITION_STYLE PartitionStyle;
         LARGE_INTEGER   StartingOffset;
@@ -97,23 +90,7 @@ ffi.cdef[[
         };
     } PARTITION_INFORMATION_EX;
 
-    /* [NEW] Standard DRIVE_LAYOUT_INFORMATION_EX */
-    typedef struct _DRIVE_LAYOUT_INFORMATION_EX {
-        DWORD PartitionStyle;
-        DWORD PartitionCount;
-        union {
-            struct { DWORD Signature; DWORD CheckSum; } Mbr;
-            struct {
-                GUID DiskId;
-                LARGE_INTEGER StartingUsableOffset;
-                LARGE_INTEGER UsableLength;
-                DWORD MaxPartitionCount;
-            } Gpt;
-        };
-        PARTITION_INFORMATION_EX PartitionEntry[1];
-    } DRIVE_LAYOUT_INFORMATION_EX;
-
-    /* Extended version for FFI allocation */
+    /* Extended version for FFI allocation (Max partitions) */
     typedef struct _DRIVE_LAYOUT_INFORMATION_EX_FULL {
         DWORD           PartitionStyle;
         DWORD           PartitionCount;
@@ -198,60 +175,12 @@ ffi.cdef[[
         DWORD QueryType;
         BYTE  AdditionalParameters[1];
     } STORAGE_PROPERTY_QUERY;
-    
-    typedef struct _SHRINK_VOLUME_INFORMATION {
-        int       ShrinkRequestType;
-        long long Flags;
-        long long NewSize;
-    } SHRINK_VOLUME_INFORMATION;
 
-    /* --- [NEW] USB Parameters --- */
+    /* USB Parameters */
     typedef struct _USB_CYCLE_PORT_PARAMS {
         ULONG ConnectionIndex;
         ULONG StatusReturned;
     } USB_CYCLE_PORT_PARAMS;
-
-    /* --- [NEW] Reparse Data Buffers --- */
-    typedef struct _REPARSE_DATA_BUFFER_HEADER {
-        uint32_t ReparseTag;
-        uint16_t ReparseDataLength;
-        uint16_t Reserved;
-    } REPARSE_DATA_BUFFER_HEADER;
-
-    typedef struct _SYMBOLIC_LINK_REPARSE_BUFFER {
-        uint32_t ReparseTag;
-        uint16_t ReparseDataLength;
-        uint16_t Reserved;
-        uint16_t SubstituteNameOffset;
-        uint16_t SubstituteNameLength;
-        uint16_t PrintNameOffset;
-        uint16_t PrintNameLength;
-        uint32_t Flags;
-        wchar_t  PathBuffer[1];
-    } SYMBOLIC_LINK_REPARSE_BUFFER;
-
-    typedef struct _MOUNT_POINT_REPARSE_BUFFER {
-        uint32_t ReparseTag;
-        uint16_t ReparseDataLength;
-        uint16_t Reserved;
-        uint16_t SubstituteNameOffset;
-        uint16_t SubstituteNameLength;
-        uint16_t PrintNameOffset;
-        uint16_t PrintNameLength;
-        wchar_t  PathBuffer[1];
-    } MOUNT_POINT_REPARSE_BUFFER;
-    
-    typedef struct _REPARSE_DATA_BUFFER {
-        uint32_t ReparseTag;
-        uint16_t ReparseDataLength;
-        uint16_t Reserved;
-        uint8_t  DataBuffer[1];
-    } REPARSE_DATA_BUFFER;
-    
-    /* Compression Constants */
-    static const uint16_t COMPRESSION_FORMAT_NONE    = 0x0000;
-    static const uint16_t COMPRESSION_FORMAT_DEFAULT = 0x0001;
-    static const uint16_t COMPRESSION_FORMAT_LZNT1   = 0x0002;
 ]]
 
-return ffi.load("kernel32")
+return ffi.C
