@@ -9,6 +9,10 @@ local ffi = require 'ffi'
 local assert = require 'ext.assert'
 
 return function(req)
+	-- [DEBUG] Trace FFI loading
+	-- io.write("[FFI] Req: " .. req .. " ... ")
+	-- io.stdout:flush()
+
 	assert.type(req, 'string')
 	local errs = {}
 	
@@ -34,20 +38,18 @@ return function(req)
 		end)
 
 		if found then
+			-- print("OK (" .. mod_name .. ")")
 			return result
 		else
 			local err_msg = tostring(result)
-			-- [CRITICAL FIX] Differentiate "Module Not Found" from "Syntax Error"
-			-- Lua's require returns a specific error message starting with "module '...' not found:" 
-			-- followed by a list of paths if the file is missing.
-			-- If the error is anything else (e.g., cdef parse error), it means the file WAS found but crashed.
 			if not err_msg:find("not found") and not err_msg:find("no field package.preload") then
-				-- File exists but has errors (Syntax/FFI error). Stop immediately and report!
+				print("\n[FFI] CRITICAL ERROR in " .. mod_name .. ":\n" .. err_msg)
 				error("FFI Binding Error in '"..mod_name.."':\n"..err_msg)
 			end
 			table.insert(errs, "Failed " .. mod_name .. ": " .. err_msg)
 		end
 	end
 	
+	print("\n[FFI] FAILED to load " .. req)
 	error("Could not load FFI binding '"..req.."'. Attempts:\n"..table.concat(errs, '\n'))
 end

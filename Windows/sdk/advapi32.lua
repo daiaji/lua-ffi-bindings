@@ -2,10 +2,7 @@ local ffi = require 'ffi'
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
-/* --- Service Handle Types --- */
-typedef HANDLE SC_HANDLE;
-typedef SC_HANDLE *LPSC_HANDLE;
-
+/* --- Constants --- */
 static const DWORD MAXIMUM_ALLOWED = 0x02000000;
 static const DWORD CREATE_UNICODE_ENVIRONMENT = 0x00000400;
 
@@ -49,10 +46,7 @@ typedef enum _SID_NAME_USE {
 } SID_NAME_USE;
 
 /* Structures */
-typedef struct _LUID {
-    DWORD LowPart;
-    LONG HighPart;
-} LUID;
+/* LUID is in minwindef */
 
 typedef struct _LUID_AND_ATTRIBUTES {
     LUID Luid;
@@ -82,7 +76,7 @@ typedef struct _ENUM_SERVICE_STATUS_PROCESSW {
     SERVICE_STATUS_PROCESS ServiceStatusProcess;
 } ENUM_SERVICE_STATUS_PROCESSW;
 
-/* [NEW] Dependent Service Structures */
+/* Dependent Service Structures */
 typedef struct _SERVICE_STATUS {
     DWORD dwServiceType;
     DWORD dwCurrentState;
@@ -135,7 +129,7 @@ BOOL StartServiceW(SC_HANDLE hService, DWORD dwNumServiceArgs, LPCWSTR* lpServic
 BOOL ControlService(SC_HANDLE hService, DWORD dwControl, void* lpServiceStatus);
 BOOL CloseServiceHandle(SC_HANDLE hSCObject);
 
-/* [NEW] Service Dependency & Config APIs */
+/* Service Dependency & Config APIs */
 BOOL EnumDependentServicesW(SC_HANDLE hService, DWORD dwServiceState, LPENUM_SERVICE_STATUSW lpServices, DWORD cbBufSize, LPDWORD pcbBytesNeeded, LPDWORD lpServicesReturned);
 BOOL QueryServiceConfigW(SC_HANDLE hService, LPQUERY_SERVICE_CONFIGW lpServiceConfig, DWORD cbBufSize, LPDWORD pcbBytesNeeded);
 

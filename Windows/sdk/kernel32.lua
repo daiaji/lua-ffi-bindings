@@ -27,14 +27,14 @@ static const DWORD WAIT_FAILED = 0xFFFFFFFF;
 static const DWORD TH32CS_SNAPPROCESS = 0x00000002;
 static const DWORD STARTF_USESHOWWINDOW = 0x00000001;
 
-/* --- File Types (for GetFileType) --- */
+/* --- File Types --- */
 static const DWORD FILE_TYPE_UNKNOWN = 0x0000;
 static const DWORD FILE_TYPE_DISK    = 0x0001;
 static const DWORD FILE_TYPE_CHAR    = 0x0002;
 static const DWORD FILE_TYPE_PIPE    = 0x0003;
 static const DWORD FILE_TYPE_REMOTE  = 0x8000;
 
-/* --- Memory Management Constants --- */
+/* --- Memory Management --- */
 static const DWORD MEM_COMMIT = 0x00001000;
 static const DWORD MEM_RESERVE = 0x00002000;
 static const DWORD MEM_RELEASE = 0x00008000;
@@ -56,7 +56,7 @@ static const DWORD ABOVE_NORMAL_PRIORITY_CLASS = 0x00008000;
 static const DWORD HIGH_PRIORITY_CLASS = 0x00000080;
 static const DWORD REALTIME_PRIORITY_CLASS = 0x00000100;
 
-/* --- FormatMessage & CodePage Constants --- */
+/* --- FormatMessage Constants --- */
 static const DWORD FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00100;
 static const DWORD FORMAT_MESSAGE_FROM_SYSTEM = 0x001000;
 static const DWORD FORMAT_MESSAGE_IGNORE_INSERTS = 0x000200;
@@ -75,7 +75,7 @@ static const DWORD OPEN_EXISTING = 3;
 static const DWORD OPEN_ALWAYS = 4;
 static const DWORD TRUNCATE_EXISTING = 5;
 
-/* --- File Attributes & Flags --- */
+/* --- File Attributes --- */
 static const DWORD FILE_ATTRIBUTE_READONLY = 0x00000001;
 static const DWORD FILE_ATTRIBUTE_HIDDEN = 0x00000002;
 static const DWORD FILE_ATTRIBUTE_SYSTEM = 0x00000004;
@@ -96,7 +96,7 @@ static const DWORD FILE_FLAG_WRITE_THROUGH = 0x80000000;
 static const DWORD FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
 static const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x00200000;
 
-/* --- File & Disposition Constants --- */
+/* --- Disposition Constants --- */
 static const DWORD DELETE = 0x00010000;
 static const DWORD FILE_SHARE_READ = 0x00000001;
 static const DWORD FILE_SHARE_WRITE = 0x00000002;
@@ -112,7 +112,7 @@ static const DWORD DDD_NO_BROADCAST_SYSTEM = 0x00000008;
 static const DWORD SYMBOLIC_LINK_FLAG_DIRECTORY = 0x1;
 static const DWORD SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE = 0x2;
 
-/* --- Job Objects Constants & Structures --- */
+/* --- Job Objects --- */
 static const int JobObjectBasicLimitInformation = 2;
 static const int JobObjectExtendedLimitInformation = 9;
 static const DWORD JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000;
@@ -129,7 +129,7 @@ typedef struct _JOBOBJECT_BASIC_LIMIT_INFORMATION {
     DWORD         SchedulingClass;
 } JOBOBJECT_BASIC_LIMIT_INFORMATION;
 
-/* [FIX] IO_COUNTERS is defined in minwindef.lua */
+/* IO_COUNTERS is in minwindef */
 
 typedef struct _JOBOBJECT_EXTENDED_LIMIT_INFORMATION {
     JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
@@ -196,7 +196,6 @@ typedef struct _WIN32_FIND_STREAM_DATA {
     WCHAR         cStreamName[296]; // MAX_PATH + 36
 } WIN32_FIND_STREAM_DATA;
 
-/* [NEW] Recursive Delete Helpers */
 typedef struct _WIN32_FIND_DATAW {
     DWORD dwFileAttributes;
     FILETIME ftCreationTime;
@@ -208,9 +207,9 @@ typedef struct _WIN32_FIND_DATAW {
     DWORD dwReserved1;
     WCHAR cFileName[260];
     WCHAR cAlternateFileName[14];
-    DWORD dwFileType; // Obsolete
-    DWORD dwCreatorType; // Obsolete
-    WORD  wFinderFlags; // Obsolete
+    DWORD dwFileType; 
+    DWORD dwCreatorType; 
+    WORD  wFinderFlags; 
 } WIN32_FIND_DATAW, *PWIN32_FIND_DATAW, *LPWIN32_FIND_DATAW;
 
 /* --- API Functions --- */
@@ -250,7 +249,6 @@ BOOL SetInformationJobObject(HANDLE hJob, int JobObjectInfoClass, void* lpJobObj
 /* Module */
 HMODULE LoadLibraryW(LPCWSTR lpLibFileName);
 HMODULE GetModuleHandleW(LPCWSTR lpModuleName);
-/* GetProcAddress always takes ANSI string for symbol name */
 void* GetProcAddress(HMODULE hModule, LPCSTR lpProcName);
 BOOL FreeLibrary(HMODULE hLibModule);
 

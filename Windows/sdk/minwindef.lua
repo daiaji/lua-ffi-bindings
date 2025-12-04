@@ -1,108 +1,63 @@
 local ffi = require 'ffi'
--- [FIX] Ensure standard C types are available
 require 'ffi.req' 'c.stddef'
 require 'ffi.req' 'c.stdint'
 
+-- [REFACTOR] Centralized Type Definitions
+-- The single source of truth for Win32 types to prevent redefinition errors.
+
 ffi.cdef [[
-/* --- Basic Types --- */
-typedef unsigned long DWORD;
-typedef int BOOL;
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef float FLOAT;
-typedef int INT;
-typedef unsigned int UINT;
+/* --- Integers --- */
+typedef unsigned long       DWORD, *PDWORD, *LPDWORD;
+typedef int                 BOOL, *PBOOL, *LPBOOL;
+typedef unsigned char       BYTE, *PBYTE, *LPBYTE;
+typedef unsigned short      WORD, *PWORD, *LPWORD;
+typedef int                 INT, *PINT, *LPINT;
+typedef unsigned int        UINT, *PUINT, *LPUINT;
+typedef long                LONG, *PLONG, *LPLONG;
+typedef unsigned long       ULONG, *PULONG;
+typedef unsigned short      USHORT, *PUSHORT;
+typedef float               FLOAT;
 
-/* --- BaseTsd.h Fixed-Width Types (Fixes iphlpapi UINT8 errors) --- */
-typedef signed char         INT8, *PINT8;
-typedef short               INT16, *PINT16;
-typedef int                 INT32, *PINT32;
-typedef __int64             INT64, *PINT64;
-typedef unsigned char       UINT8, *PUINT8;
-typedef unsigned short      UINT16, *PUINT16;
-typedef unsigned int        UINT32, *PUINT32;
-typedef unsigned __int64    UINT64, *PUINT64;
-
-/* --- Extended Integers --- */
-typedef unsigned long ULONG;
-typedef unsigned short USHORT;
-typedef long LONG;
-typedef unsigned long long ULONGLONG;
-typedef long long LONGLONG;
-typedef unsigned long long DWORD64;
+/* --- Fixed Width --- */
+typedef int8_t              INT8, *PINT8;
+typedef int16_t             INT16, *PINT16;
+typedef int32_t             INT32, *PINT32;
+typedef int64_t             INT64, *PINT64;
+typedef uint8_t             UINT8, *PUINT8;
+typedef uint16_t            UINT16, *PUINT16;
+typedef uint32_t            UINT32, *PUINT32;
+typedef uint64_t            UINT64, *PUINT64, ULONGLONG;
+typedef int64_t             LONGLONG;
+typedef uint64_t            DWORD64;
 
 /* --- Pointers & Handles --- */
-typedef void* HANDLE;
-typedef HANDLE *PHANDLE;
-typedef HANDLE *LPHANDLE;
-typedef void* HINSTANCE;
-typedef void* HMODULE;
-typedef void* HWND;
-typedef void* HLOCAL;
-typedef void* HKEY;
-typedef void* PVOID;
-typedef void* LPVOID; 
-typedef const void *LPCVOID; /* [FIX] Added LPCVOID for user32/shell32 APIs */
-typedef void* PSID;
+typedef void                *PVOID, *LPVOID;
+typedef const void          *LPCVOID;
+typedef void                *HANDLE, *PHANDLE, *LPHANDLE;
+typedef HANDLE              HMODULE, HINSTANCE, HKEY, HLOCAL, HWND, SC_HANDLE;
+typedef void                *PSID;
 
-/* --- Status & Security Types --- */
-/* [FIX] Moved NTSTATUS here to prevent dependency loops between ntdll/ntext */
-typedef LONG NTSTATUS;
-typedef NTSTATUS *PNTSTATUS;
+/* --- Status & Security --- */
+typedef LONG                NTSTATUS, *PNTSTATUS;
+typedef LONG                HRESULT;
+typedef DWORD               ACCESS_MASK, *PACCESS_MASK;
+typedef DWORD               SECURITY_INFORMATION, *PSECURITY_INFORMATION;
+typedef PVOID               PSECURITY_DESCRIPTOR;
 
-/* [FIX] Added missing security types for ntdll/ntext */
-typedef DWORD ACCESS_MASK;
-typedef ACCESS_MASK *PACCESS_MASK;
-typedef DWORD SECURITY_INFORMATION;
-typedef SECURITY_INFORMATION *PSECURITY_INFORMATION;
-typedef PVOID PSECURITY_DESCRIPTOR; /* [FIX] Centralized here */
+/* --- Pointer Sizing --- */
+typedef size_t              ULONG_PTR, DWORD_PTR, SIZE_T;
+typedef ptrdiff_t           LONG_PTR, INT_PTR, SSIZE_T;
+typedef ULONG_PTR           WPARAM;
+typedef LONG_PTR            LPARAM, LRESULT;
 
-/* --- Return Codes --- */
-typedef LONG HRESULT;
+/* --- Strings --- */
+typedef char                CHAR, *PCHAR, *LPSTR, *PSTR;
+typedef const char          *LPCSTR, *PCSTR;
+typedef wchar_t             WCHAR, *PWCHAR, *LPWSTR, *PWSTR, *LPTSTR;
+typedef const wchar_t       *LPCWSTR, *PCWSTR;
+typedef unsigned char       UCHAR, *PUCHAR, BOOLEAN;
 
-/* --- Pointers to Integers --- */
-typedef DWORD *PDWORD;
-typedef DWORD *LPDWORD;
-typedef ULONG *PULONG;
-typedef USHORT *PUSHORT;
-typedef unsigned char *PBYTE;
-typedef unsigned char *LPBYTE;
-
-/* --- Pointer-Sized Integers --- */
-typedef size_t ULONG_PTR;
-typedef ptrdiff_t LONG_PTR;
-typedef size_t UINT_PTR;
-typedef ptrdiff_t INT_PTR;
-typedef ULONG_PTR DWORD_PTR;
-typedef size_t SIZE_T;
-typedef ptrdiff_t SSIZE_T;
-
-/* --- Message Params --- */
-typedef UINT_PTR WPARAM;
-typedef LONG_PTR LPARAM;
-typedef LONG_PTR LRESULT;
-
-/* --- Strings (ANSI/Wide/Generic) (Fixes PCHAR errors) --- */
-typedef char CHAR;
-typedef char *PCHAR;
-typedef char *LPSTR;
-typedef char *PSTR;
-typedef const char *LPCSTR;
-typedef const char *PCSTR;
-
-typedef wchar_t WCHAR;
-typedef wchar_t *PWCHAR;
-typedef wchar_t *LPWSTR;
-typedef wchar_t *PWSTR;
-typedef wchar_t *LPTSTR;
-typedef const wchar_t *LPCWSTR;
-typedef const wchar_t *PCWSTR;
-
-typedef unsigned char UCHAR;
-typedef unsigned char *PUCHAR;
-typedef unsigned char BOOLEAN;
-
-/* --- Large Integers --- */
+/* --- Structures (Common) --- */
 typedef union _LARGE_INTEGER {
     struct { DWORD LowPart; LONG HighPart; } u;
     LONGLONG QuadPart;
@@ -113,7 +68,6 @@ typedef union _ULARGE_INTEGER {
     ULONGLONG QuadPart;
 } ULARGE_INTEGER, *PULARGE_INTEGER;
 
-/* --- Time --- */
 typedef struct _FILETIME {
     DWORD dwLowDateTime;
     DWORD dwHighDateTime;
@@ -124,18 +78,28 @@ typedef struct _SYSTEMTIME {
     WORD wHour; WORD wMinute; WORD wSecond; WORD wMilliseconds;
 } SYSTEMTIME, *PSYSTEMTIME, *LPSYSTEMTIME;
 
-/* --- GUID --- */
 typedef struct _GUID {
     unsigned long  Data1;
     unsigned short Data2;
     unsigned short Data3;
     unsigned char  Data4[8];
-} GUID;
-typedef GUID IID;
-typedef GUID CLSID;
-typedef const GUID* REFGUID;
-typedef const IID* REFIID;
-typedef const CLSID* REFCLSID;
+} GUID, IID, CLSID;
+typedef const GUID *REFGUID, *REFIID, *REFCLSID;
+
+typedef struct _IO_COUNTERS {
+    ULONGLONG ReadOperationCount;
+    ULONGLONG WriteOperationCount;
+    ULONGLONG OtherOperationCount;
+    ULONGLONG ReadTransferCount;
+    ULONGLONG WriteTransferCount;
+    ULONGLONG OtherTransferCount;
+} IO_COUNTERS;
+
+/* [NEW] LUID Moved here to prevent collision between advapi32 and ntdll */
+typedef struct _LUID {
+    DWORD LowPart;
+    LONG HighPart;
+} LUID, *PLUID;
 
 /* --- Registry Constants --- */
 static const DWORD REG_NONE = 0;
@@ -153,15 +117,8 @@ static const DWORD REG_RESOURCE_REQUIREMENTS_LIST = 10;
 static const DWORD REG_QWORD = 11;
 static const DWORD REG_QWORD_LITTLE_ENDIAN = 11;
 
-/* --- IO Counters (Centralized Definition) --- */
-typedef struct _IO_COUNTERS {
-    ULONGLONG ReadOperationCount;
-    ULONGLONG WriteOperationCount;
-    ULONGLONG OtherOperationCount;
-    ULONGLONG ReadTransferCount;
-    ULONGLONG WriteTransferCount;
-    ULONGLONG OtherTransferCount;
-} IO_COUNTERS;
+/* --- Common Constants --- */
+static const DWORD INVALID_FILE_ATTRIBUTES = 0xFFFFFFFF;
 ]]
 
 return ffi.C

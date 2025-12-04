@@ -1,12 +1,11 @@
 local ffi = require 'ffi'
 require 'ffi.req' 'Windows.sdk.minwindef'
+-- Requires ntdll for UNICODE_STRING
+require 'ffi.req' 'Windows.sdk.ntdll' 
 
--- [FIX] Removed definitions that overlap with ntdll.lua to prevent redefinition errors
 ffi.cdef [[
     /* --- File Information Classes --- */
-    /* 
-       Native Constants not in ntdll.lua enums
-    */
+    /* Native Constants not in ntdll.lua enums */
     static const int FileBasicInformation       = 4;
     static const int FileDispositionInformation = 13;
     static const int FileDispositionInformationEx = 64;
@@ -17,7 +16,7 @@ ffi.cdef [[
     static const ULONG DACL_SECURITY_INFORMATION  = 0x00000004;
     static const ULONG SACL_SECURITY_INFORMATION  = 0x00000008;
 
-    /* --- Native APIs (Missing from ntdll.lua) --- */
+    /* --- Native APIs (Extensions) --- */
     
     /* Paging File Management */
     NTSTATUS NtCreatePagingFile(
@@ -47,5 +46,5 @@ ffi.cdef [[
     );
 ]]
 
--- 加载 ntdll.dll
+-- Usually these are exported by ntdll.dll
 return ffi.load("ntdll")

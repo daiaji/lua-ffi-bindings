@@ -1,9 +1,9 @@
 local ffi = require 'ffi'
--- MinWinDef defines basic types including SIZE_T, NTSTATUS, etc.
+-- MinWinDef defines basic types including SIZE_T, NTSTATUS, LUID, IO_COUNTERS
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
-/* --- Basic Types --- */
+/* --- Specific Types --- */
 typedef SIZE_T *PSIZE_T;
 typedef LONG KPRIORITY;
 
@@ -16,7 +16,8 @@ static const ULONG STATUS_NO_MORE_ENTRIES = 0x8000001A;
 static const ULONG STATUS_ACCESS_DENIED = 0xC0000022;
 static const ULONG STATUS_INVALID_PARAMETER = 0xC000000D;
 static const ULONG STATUS_PRIVILEGE_NOT_HELD = 0xC0000061;
-static const ULONG STATUS_VARIABLE_NOT_FOUND = 0xC0000034; /* [NEW] */
+static const ULONG STATUS_VARIABLE_NOT_FOUND = 0xC0000034;
+static const ULONG STATUS_IMAGE_ALREADY_LOADED = 0xC000010E;
 
 /* --- Memory Constants --- */
 static const ULONG MEM_DECOMMIT    = 0x4000;
@@ -63,7 +64,7 @@ static const ULONG OBJ_KERNEL_HANDLE       = 0x00000200;
 static const ULONG OBJ_FORCE_ACCESS_CHECK  = 0x00000400;
 static const ULONG OBJ_VALID_ATTRIBUTES    = 0x000007F2;
 
-/* --- IO Status Block [FIXED: Added for NtSetInformationFile] --- */
+/* --- IO Status Block --- */
 typedef struct _IO_STATUS_BLOCK {
     union {
         NTSTATUS Status;
@@ -136,7 +137,7 @@ static const ULONG POWER_ACTION_UI_ALLOWED      = 0x00000002;
 static const ULONG POWER_ACTION_OVERRIDE_APPS   = 0x00000004;
 static const ULONG POWER_ACTION_CRITICAL        = 0x80000000;
 
-/* --- [NEW] UEFI/Firmware Constants --- */
+/* --- UEFI/Firmware Constants --- */
 static const ULONG EFI_VARIABLE_NON_VOLATILE = 0x00000001;
 static const ULONG EFI_VARIABLE_BOOTSERVICE_ACCESS = 0x00000002;
 static const ULONG EFI_VARIABLE_RUNTIME_ACCESS = 0x00000004;
@@ -293,13 +294,10 @@ typedef enum _TOKEN_INFORMATION_CLASS {
     TokenIsRestricted
 } TOKEN_INFORMATION_CLASS;
 
-typedef struct _LUID_NT {
-    DWORD LowPart;
-    LONG HighPart;
-} LUID_NT;
+/* LUID is now defined in minwindef.lua */
 
 typedef struct _LUID_AND_ATTRIBUTES_NT {
-    LUID_NT Luid;
+    LUID Luid;
     DWORD Attributes;
 } LUID_AND_ATTRIBUTES_NT;
 
@@ -417,7 +415,7 @@ long __stdcall NtQueryVirtualMemory(
     PSIZE_T ReturnLength
 );
 
-/* --- File/IO Native APIs [FIXED: Added] --- */
+/* --- File/IO Native APIs --- */
 NTSTATUS NtSetInformationFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
@@ -479,7 +477,7 @@ long __stdcall NtUnloadDriver(
     POBJECT_ATTRIBUTES DriverServiceName
 );
 
-/* --- [NEW] System Environment (UEFI) APIs --- */
+/* --- UEFI/Firmware APIs --- */
 long __stdcall NtQuerySystemEnvironmentValueEx(
     PUNICODE_STRING VariableName,
     const GUID* VendorGuid,
