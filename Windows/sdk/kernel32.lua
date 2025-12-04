@@ -240,6 +240,9 @@ DWORD WTSGetActiveConsoleSessionId(void);
 UINT GetWindowsDirectoryW(LPWSTR lpBuffer, UINT uSize);
 BOOL GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode);
 
+/* [ADDED] Missing symbol */
+HANDLE GetCurrentProcess(void);
+
 /* Job Objects */
 HANDLE CreateJobObjectW(void* lpJobAttributes, LPCWSTR lpName);
 BOOL AssignProcessToJobObject(HANDLE hJob, HANDLE hProcess);
@@ -334,6 +337,9 @@ void SetLastError(DWORD dwErrCode);
 DWORD FormatMessageW(DWORD dwFlags, const void* lpSource, DWORD dwMessageId, DWORD dwLanguageId, LPWSTR lpBuffer, DWORD nSize, void* Arguments);
 
 void GetSystemTimeAsFileTime(FILETIME* lpSystemTimeAsFileTime);
+
+/* [ADDED] Firmware Environment */
+DWORD GetFirmwareEnvironmentVariableW(LPCWSTR lpName, LPCWSTR lpGuid, PVOID pBuffer, DWORD nSize);
 ]]
 
 return ffi.load("kernel32")
