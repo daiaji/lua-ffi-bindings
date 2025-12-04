@@ -2,9 +2,6 @@ local ffi = require 'ffi'
 require 'ffi.req' 'c.stddef'
 require 'ffi.req' 'c.stdint'
 
--- [REFACTOR] Centralized Type Definitions
--- The single source of truth for Win32 types to prevent redefinition errors.
-
 ffi.cdef [[
 /* --- Integers --- */
 typedef unsigned long       DWORD, *PDWORD, *LPDWORD;
@@ -57,7 +54,7 @@ typedef wchar_t             WCHAR, *PWCHAR, *LPWSTR, *PWSTR, *LPTSTR;
 typedef const wchar_t       *LPCWSTR, *PCWSTR;
 typedef unsigned char       UCHAR, *PUCHAR, BOOLEAN;
 
-/* --- Structures (Common) --- */
+/* --- Structures --- */
 typedef union _LARGE_INTEGER {
     struct { DWORD LowPart; LONG HighPart; } u;
     LONGLONG QuadPart;
@@ -95,27 +92,26 @@ typedef struct _IO_COUNTERS {
     ULONGLONG OtherTransferCount;
 } IO_COUNTERS;
 
-/* [NEW] LUID Moved here to prevent collision between advapi32 and ntdll */
 typedef struct _LUID {
     DWORD LowPart;
     LONG HighPart;
 } LUID, *PLUID;
 
 /* --- Registry Constants --- */
-static const DWORD REG_NONE = 0;
-static const DWORD REG_SZ = 1;
-static const DWORD REG_EXPAND_SZ = 2;
-static const DWORD REG_BINARY = 3;
-static const DWORD REG_DWORD = 4;
-static const DWORD REG_DWORD_LITTLE_ENDIAN = 4;
-static const DWORD REG_DWORD_BIG_ENDIAN = 5;
-static const DWORD REG_LINK = 6;
-static const DWORD REG_MULTI_SZ = 7;
-static const DWORD REG_RESOURCE_LIST = 8;
-static const DWORD REG_FULL_RESOURCE_DESCRIPTOR = 9;
-static const DWORD REG_RESOURCE_REQUIREMENTS_LIST = 10;
-static const DWORD REG_QWORD = 11;
-static const DWORD REG_QWORD_LITTLE_ENDIAN = 11;
+static const DWORD REG_NONE                         = 0;
+static const DWORD REG_SZ                           = 1;
+static const DWORD REG_EXPAND_SZ                    = 2;
+static const DWORD REG_BINARY                       = 3;
+static const DWORD REG_DWORD                        = 4;
+static const DWORD REG_DWORD_LITTLE_ENDIAN          = 4;
+static const DWORD REG_DWORD_BIG_ENDIAN             = 5;
+static const DWORD REG_LINK                         = 6;
+static const DWORD REG_MULTI_SZ                     = 7;
+static const DWORD REG_RESOURCE_LIST                = 8;
+static const DWORD REG_FULL_RESOURCE_DESCRIPTOR     = 9;
+static const DWORD REG_RESOURCE_REQUIREMENTS_LIST   = 10;
+static const DWORD REG_QWORD                        = 11;
+static const DWORD REG_QWORD_LITTLE_ENDIAN          = 11;
 
 /* --- Common Constants --- */
 static const DWORD INVALID_FILE_ATTRIBUTES = 0xFFFFFFFF;
