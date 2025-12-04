@@ -77,25 +77,25 @@ ffi.cdef[[
     typedef struct IVdsAsync IVdsAsync;
 
     /* --- Structures --- */
-    /* [FIXED] Correct VDS_DISK_PROP layout */
+    /* [FIXED] Correct VDS_DISK_PROP layout including pwszName */
     typedef struct _VDS_DISK_PROP {
         VDS_OBJECT_ID        id;
-        int                  status;          /* VDS_DISK_STATUS */
-        int                  ReserveMode;     /* VDS_LUN_RESERVE_MODE */
-        int                  health;          /* VDS_HEALTH */
+        int                  status;
+        int                  ReserveMode;
+        int                  health;
         DWORD                dwDeviceType;
         DWORD                dwMediaType;
         ULONGLONG            ullSize;
         ULONGLONG            ullBytesAllocated;
         ULONG                ulFlags;
-        int                  BusType;         /* VDS_STORAGE_BUS_TYPE */
+        int                  BusType;
         VDS_PARTITION_STYLE  PartitionStyle;
         union {
             struct { DWORD dwSignature; } Mbr;
             struct { GUID DiskId; } Gpt;
         };
         LPWSTR               pwszDiskAddress;
-        LPWSTR               pwszName;        /* Name used to open handle (e.g. \\?\PhysicalDriveX) */
+        LPWSTR               pwszName;
         LPWSTR               pwszFriendlyName;
         LPWSTR               pwszAdaptorName;
         LPWSTR               pwszDevicePath;
