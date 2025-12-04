@@ -47,7 +47,6 @@ ffi.cdef[[
         VDS_PST_GPT = 2
     } VDS_PARTITION_STYLE;
 
-    /* --- [NEW] Partition Creation Structures --- */
     typedef struct _CREATE_PARTITION_PARAMETERS {
         VDS_PARTITION_STYLE style;
         union {
@@ -78,14 +77,25 @@ ffi.cdef[[
     typedef struct IVdsAsync IVdsAsync;
 
     /* --- Structures --- */
+    /* [FIXED] Correct VDS_DISK_PROP layout */
     typedef struct _VDS_DISK_PROP {
         VDS_OBJECT_ID        id;
-        int                  status;
-        int                  health;
-        int                  DeviceType;
+        int                  status;          /* VDS_DISK_STATUS */
+        int                  ReserveMode;     /* VDS_LUN_RESERVE_MODE */
+        int                  health;          /* VDS_HEALTH */
+        DWORD                dwDeviceType;
         DWORD                dwMediaType;
-        ULONG                ulFlags;
         ULONGLONG            ullSize;
+        ULONGLONG            ullBytesAllocated;
+        ULONG                ulFlags;
+        int                  BusType;         /* VDS_STORAGE_BUS_TYPE */
+        VDS_PARTITION_STYLE  PartitionStyle;
+        union {
+            struct { DWORD dwSignature; } Mbr;
+            struct { GUID DiskId; } Gpt;
+        };
+        LPWSTR               pwszDiskAddress;
+        LPWSTR               pwszName;        /* Name used to open handle (e.g. \\?\PhysicalDriveX) */
         LPWSTR               pwszFriendlyName;
         LPWSTR               pwszAdaptorName;
         LPWSTR               pwszDevicePath;
