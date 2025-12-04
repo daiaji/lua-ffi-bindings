@@ -68,6 +68,9 @@ static const DWORD GENERIC_WRITE = 0x40000000;
 static const DWORD GENERIC_EXECUTE = 0x20000000;
 static const DWORD GENERIC_ALL = 0x10000000;
 
+/* [ADDED] Specific Rights */
+static const DWORD FILE_WRITE_ATTRIBUTES = 0x0100;
+
 /* --- File Creation Disposition --- */
 static const DWORD CREATE_NEW = 1;
 static const DWORD CREATE_ALWAYS = 2;
@@ -240,7 +243,7 @@ DWORD WTSGetActiveConsoleSessionId(void);
 UINT GetWindowsDirectoryW(LPWSTR lpBuffer, UINT uSize);
 BOOL GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode);
 
-/* [ADDED] Missing symbol */
+/* Missing symbol */
 HANDLE GetCurrentProcess(void);
 
 /* Job Objects */

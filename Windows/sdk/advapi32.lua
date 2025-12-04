@@ -143,6 +143,10 @@ LONG RegDeleteValueW(HKEY hKey, LPCWSTR lpValueName);
 LONG RegDeleteKeyW(HKEY hKey, LPCWSTR lpSubKey);
 LONG RegEnumKeyExW(HKEY hKey, DWORD dwIndex, LPWSTR lpName, DWORD* lpcchName, DWORD* lpReserved, LPWSTR lpClass, DWORD* lpcchClass, FILETIME* lpftLastWriteTime);
 
+/* [ADDED] Missing Symbols */
+LONG RegDeleteTreeW(HKEY hKey, LPCWSTR lpSubKey);
+BOOL ConvertStringSidToSidW(LPCWSTR StringSid, PSID* Sid);
+
 /* [NEW] ACL / Security */
 DWORD SetNamedSecurityInfoW(
     LPWSTR pObjectName,
