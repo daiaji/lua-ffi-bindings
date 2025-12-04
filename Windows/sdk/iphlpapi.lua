@@ -14,7 +14,8 @@ ffi.cdef [[
 
     typedef struct {
         DWORD dwNumEntries;
-        MIB_TCPROW_OWNER_PID table[1];
+        /* [FIX] Use Variable Length Array [?] to prevent bounds check errors in LuaJIT */
+        MIB_TCPROW_OWNER_PID table[?];
     } MIB_TCPTABLE_OWNER_PID;
 
     typedef struct {
@@ -25,7 +26,8 @@ ffi.cdef [[
 
     typedef struct {
         DWORD dwNumEntries;
-        MIB_UDPROW_OWNER_PID table[1];
+        /* [FIX] Use Variable Length Array [?] */
+        MIB_UDPROW_OWNER_PID table[?];
     } MIB_UDPTABLE_OWNER_PID;
 
     DWORD GetExtendedTcpTable(PVOID pTcpTable, PDWORD pdwSize, BOOL bOrder, ULONG ulAf, int TableClass, ULONG Reserved);

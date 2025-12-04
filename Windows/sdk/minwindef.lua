@@ -44,6 +44,8 @@ typedef PVOID               PSECURITY_DESCRIPTOR;
 /* --- Pointer Sizing --- */
 typedef size_t              ULONG_PTR, DWORD_PTR, SIZE_T;
 typedef ptrdiff_t           LONG_PTR, INT_PTR, SSIZE_T;
+/* [FIX] Added UINT_PTR for winsock2 compatibility */
+typedef ULONG_PTR           UINT_PTR; 
 typedef ULONG_PTR           WPARAM;
 typedef LONG_PTR            LPARAM, LRESULT;
 
