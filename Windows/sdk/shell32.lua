@@ -101,6 +101,29 @@ ffi.cdef [[
         HRESULT (__stdcall *GetCurFile)(void* This, LPWSTR* ppszFileName);
     } IPersistFileVtbl;
     typedef struct { IPersistFileVtbl* lpVtbl; } IPersistFile;
+
+    typedef struct _SHELLEXECUTEINFOW {
+        DWORD     cbSize;
+        ULONG     fMask;
+        HWND      hwnd;
+        LPCWSTR   lpVerb;
+        LPCWSTR   lpFile;
+        LPCWSTR   lpParameters;
+        LPCWSTR   lpDirectory;
+        int       nShow;
+        HINSTANCE hInstApp;
+        void      *lpIDList;
+        LPCWSTR   lpClass;
+        HKEY      hkeyClass;
+        DWORD     dwHotKey;
+        union {
+            HANDLE hIcon;
+            HANDLE hMonitor;
+        } DUMMYUNIONNAME;
+        HANDLE    hProcess;
+    } SHELLEXECUTEINFOW;
+    
+    BOOL ShellExecuteExW(SHELLEXECUTEINFOW *pExecInfo);
 ]]
 
 local lib = ffi.load("shell32")

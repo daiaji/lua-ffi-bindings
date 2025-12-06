@@ -113,6 +113,18 @@ ffi.cdef [[
     /* --- [FIX] SHChangeNotify removed (moved to shell32.lua) --- */
 
     BOOL SystemParametersInfoW(UINT uiAction, UINT uiParam, PVOID pvParam, UINT fWinIni);
+    
+    DWORD WaitForInputIdle(HANDLE hProcess, DWORD dwMilliseconds);
+    
+    LRESULT SendMessageTimeoutW(
+        HWND hWnd, 
+        UINT Msg, 
+        WPARAM wParam, 
+        LPARAM lParam, 
+        UINT fuFlags, 
+        UINT uTimeout, 
+        PDWORD_PTR lpdwResult
+    );
 ]]
 
 return ffi.load("user32")

@@ -215,6 +215,19 @@ typedef struct _WIN32_FIND_DATAW {
     WORD  wFinderFlags; 
 } WIN32_FIND_DATAW, *PWIN32_FIND_DATAW, *LPWIN32_FIND_DATAW;
 
+typedef struct _BY_HANDLE_FILE_INFORMATION {
+    DWORD dwFileAttributes;
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    DWORD dwVolumeSerialNumber;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
+    DWORD nNumberOfLinks;
+    DWORD nFileIndexHigh;
+    DWORD nFileIndexLow;
+} BY_HANDLE_FILE_INFORMATION;
+
 /* --- API Functions --- */
 BOOL CloseHandle(HANDLE hObject);
 
@@ -276,8 +289,12 @@ BOOL WriteFile(HANDLE hFile, const void* lpBuffer, DWORD nNumberOfBytesToWrite, 
 BOOL FlushFileBuffers(HANDLE hFile);
 BOOL GetFileSizeEx(HANDLE hFile, LARGE_INTEGER* lpFileSize);
 BOOL SetFilePointerEx(HANDLE hFile, LARGE_INTEGER liDistanceToMove, LARGE_INTEGER* lpNewFilePointer, DWORD dwMoveMethod);
+BOOL SetFilePointer(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod);
 BOOL DeviceIoControl(HANDLE hDevice, DWORD dwIoControlCode, LPVOID lpInBuffer, DWORD nInBufferSize, LPVOID lpOutBuffer, DWORD nOutBufferSize, LPDWORD lpBytesReturned, void* lpOverlapped);
 DWORD GetFileType(HANDLE hFile); 
+BOOL GetFileInformationByHandle(HANDLE hFile, BY_HANDLE_FILE_INFORMATION* lpFileInformation);
+DWORD GetCompressedFileSizeW(LPCWSTR lpFileName, LPDWORD lpFileSizeHigh);
+BOOL SetFileTime(HANDLE hFile, const FILETIME* lpCreationTime, const FILETIME* lpLastAccessTime, const FILETIME* lpLastWriteTime);
 
 /* File Operations */
 BOOL CopyFileW(LPCWSTR lpExistingFileName, LPCWSTR lpNewFileName, BOOL bFailIfExists);
@@ -293,6 +310,8 @@ BOOL SetFileInformationByHandle(HANDLE hFile, int FileInformationClass, void* lp
 BOOL CreateDirectoryW(LPCWSTR lpPathName, void* lpSecurityAttributes);
 BOOL RemoveDirectoryW(LPCWSTR lpPathName);
 DWORD GetFullPathNameW(LPCWSTR lpFileName, DWORD nBufferLength, LPWSTR lpBuffer, LPWSTR* lpFilePart);
+DWORD SearchPathW(LPCWSTR lpPath, LPCWSTR lpFileName, LPCWSTR lpExtension, DWORD nBufferLength, LPWSTR lpBuffer, LPWSTR* lpFilePart);
+void ExitProcess(UINT uExitCode);
 
 /* Directory Iteration */
 HANDLE FindFirstFileW(LPCWSTR lpFileName, WIN32_FIND_DATAW* lpFindFileData);
