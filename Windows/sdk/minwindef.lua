@@ -49,6 +49,11 @@ typedef ULONG_PTR           UINT_PTR;
 typedef ULONG_PTR           WPARAM;
 typedef LONG_PTR            LPARAM, LRESULT;
 
+/* [FIX] Pointer to Pointer Sizing Types (Critical for x64 API calls like SendMessageTimeout) */
+typedef ULONG_PTR           *PULONG_PTR;
+typedef DWORD_PTR           *PDWORD_PTR;
+typedef LONG_PTR            *PLONG_PTR;
+
 /* --- Strings --- */
 typedef char                CHAR, *PCHAR, *LPSTR, *PSTR;
 typedef const char          *LPCSTR, *PCSTR;
