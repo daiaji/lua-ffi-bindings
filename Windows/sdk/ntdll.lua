@@ -440,6 +440,16 @@ long __stdcall NtQueryVirtualMemory(
 );
 
 /* --- File/IO Native APIs --- */
+/* [FIX] Added missing NtOpenFile declaration */
+NTSTATUS NtOpenFile(
+    PHANDLE FileHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    PIO_STATUS_BLOCK IoStatusBlock,
+    ULONG ShareAccess,
+    ULONG OpenOptions
+);
+
 NTSTATUS NtSetInformationFile(
     HANDLE FileHandle,
     PIO_STATUS_BLOCK IoStatusBlock,
