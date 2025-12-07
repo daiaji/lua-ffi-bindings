@@ -370,6 +370,11 @@ typedef struct _FILE_BASIC_INFORMATION {
     ULONG FileAttributes;
 } FILE_BASIC_INFORMATION, *PFILE_BASIC_INFORMATION;
 
+/* [FIX] Added FILE_DISPOSITION_INFORMATION for delete operations */
+typedef struct _FILE_DISPOSITION_INFORMATION {
+    BOOLEAN DeleteFile;
+} FILE_DISPOSITION_INFORMATION, *PFILE_DISPOSITION_INFORMATION;
+
 /* --- API Functions --- */
 long __stdcall NtQuerySystemInformation(
     SYSTEM_INFORMATION_CLASS SystemInformationClass,
@@ -440,7 +445,6 @@ long __stdcall NtQueryVirtualMemory(
 );
 
 /* --- File/IO Native APIs --- */
-/* [FIX] Added missing NtOpenFile declaration */
 NTSTATUS NtOpenFile(
     PHANDLE FileHandle,
     ACCESS_MASK DesiredAccess,
