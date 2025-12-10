@@ -105,6 +105,28 @@ typedef struct _QUERY_SERVICE_CONFIGW {
     LPWSTR  lpDisplayName;
 } QUERY_SERVICE_CONFIGW, *LPQUERY_SERVICE_CONFIGW;
 
+/* [NEW] Service Config Structures */
+typedef struct _SERVICE_DELAYED_AUTO_START_INFO { 
+    BOOL fDelayedAutostart; 
+} SERVICE_DELAYED_AUTO_START_INFO, *LPSERVICE_DELAYED_AUTO_START_INFO;
+
+/* Security Types */
+typedef enum _SE_OBJECT_TYPE {
+    SE_UNKNOWN_OBJECT_TYPE = 0,
+    SE_FILE_OBJECT,
+    SE_SERVICE,
+    SE_PRINTER,
+    SE_REGISTRY_KEY,
+    SE_LMSHARE,
+    SE_KERNEL_OBJECT,
+    SE_WINDOW_OBJECT,
+    SE_DS_OBJECT,
+    SE_DS_OBJECT_ALL,
+    SE_PROVIDER_DEFINED_OBJECT,
+    SE_WMIGUID_OBJECT,
+    SE_REGISTRY_WOW64_32KEY
+} SE_OBJECT_TYPE;
+
 /* API Functions */
 /* Process Creation */
 BOOL CreateProcessAsUserW(HANDLE hToken, LPCWSTR lpApplicationName, LPWSTR lpCommandLine, void* lpProcessAttributes, void* lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, void* lpEnvironment, LPCWSTR lpCurrentDirectory, void* lpStartupInfo, void* lpProcessInformation);
@@ -128,6 +150,9 @@ BOOL QueryServiceStatusEx(SC_HANDLE hService, int InfoLevel, LPBYTE lpBuffer, DW
 BOOL StartServiceW(SC_HANDLE hService, DWORD dwNumServiceArgs, LPCWSTR* lpServiceArgVectors);
 BOOL ControlService(SC_HANDLE hService, DWORD dwControl, void* lpServiceStatus);
 BOOL CloseServiceHandle(SC_HANDLE hSCObject);
+SC_HANDLE CreateServiceW(SC_HANDLE hSCManager, LPCWSTR lpServiceName, LPCWSTR lpDisplayName, DWORD dwDesiredAccess, DWORD dwServiceType, DWORD dwStartType, DWORD dwErrorControl, LPCWSTR lpBinaryPathName, LPCWSTR lpLoadOrderGroup, LPDWORD lpdwTagId, LPCWSTR lpDependencies, LPCWSTR lpServiceStartName, LPCWSTR lpPassword);
+BOOL DeleteService(SC_HANDLE hService);
+BOOL ChangeServiceConfig2W(SC_HANDLE hService, DWORD dwInfoLevel, LPVOID lpInfo);
 
 /* Service Dependency & Config APIs */
 BOOL EnumDependentServicesW(SC_HANDLE hService, DWORD dwServiceState, LPENUM_SERVICE_STATUSW lpServices, DWORD cbBufSize, LPDWORD pcbBytesNeeded, LPDWORD lpServicesReturned);

@@ -144,6 +144,12 @@ typedef struct _JOBOBJECT_EXTENDED_LIMIT_INFORMATION {
 } JOBOBJECT_EXTENDED_LIMIT_INFORMATION;
 
 /* --- Structures --- */
+typedef struct _SECURITY_ATTRIBUTES {
+    DWORD nLength;
+    LPVOID lpSecurityDescriptor;
+    BOOL bInheritHandle;
+} SECURITY_ATTRIBUTES, *PSECURITY_ATTRIBUTES, *LPSECURITY_ATTRIBUTES;
+
 typedef struct _STARTUPINFOW {
     DWORD cb;
     LPWSTR lpReserved;
@@ -228,6 +234,18 @@ typedef struct _BY_HANDLE_FILE_INFORMATION {
     DWORD nFileIndexLow;
 } BY_HANDLE_FILE_INFORMATION;
 
+typedef struct _MEMORYSTATUSEX {
+    DWORD dwLength;
+    DWORD dwMemoryLoad;
+    uint64_t ullTotalPhys;
+    uint64_t ullAvailPhys;
+    uint64_t ullTotalPageFile;
+    uint64_t ullAvailPageFile;
+    uint64_t ullTotalVirtual;
+    uint64_t ullAvailVirtual;
+    uint64_t ullAvailExtendedVirtual;
+} MEMORYSTATUSEX;
+
 /* --- API Functions --- */
 BOOL CloseHandle(HANDLE hObject);
 
@@ -281,6 +299,10 @@ HANDLE CreateEventW(void* lpEventAttributes, BOOL bManualReset, BOOL bInitialSta
 HANDLE OpenEventW(DWORD dwDesiredAccess, BOOL bInheritHandle, LPCWSTR lpName);
 BOOL SetEvent(HANDLE hEvent);
 BOOL ResetEvent(HANDLE hEvent);
+
+/* Pipe */
+BOOL CreatePipe(PHANDLE hReadPipe, PHANDLE hWritePipe, LPSECURITY_ATTRIBUTES lpPipeAttributes, DWORD nSize);
+BOOL SetHandleInformation(HANDLE hObject, DWORD dwMask, DWORD dwFlags);
 
 /* File I/O */
 HANDLE CreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, void* lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
@@ -347,6 +369,7 @@ BOOL DefineDosDeviceW(DWORD dwFlags, LPCWSTR lpDeviceName, LPCWSTR lpTargetPath)
 HLOCAL LocalFree(HLOCAL hMem);
 LPVOID VirtualAlloc(LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect);
 BOOL VirtualFree(LPVOID lpAddress, SIZE_T dwSize, DWORD dwFreeType);
+BOOL GlobalMemoryStatusEx(MEMORYSTATUSEX* lpBuffer);
 
 /* String */
 int WideCharToMultiByte(unsigned int CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, int* lpUsedDefaultChar);

@@ -4,6 +4,7 @@ require 'ffi.req' 'Windows.sdk.minwindef'
 ffi.cdef [[
     /* --- Handle Types --- */
     typedef void* HDEVINFO;
+    typedef void* HINF;
     
     /* --- Structures --- */
     typedef struct _SP_DEVINFO_DATA {
@@ -37,6 +38,23 @@ ffi.cdef [[
         DWORD Scope;
         DWORD HwProfile;
     } SP_PROPCHANGE_PARAMS, *PSP_PROPCHANGE_PARAMS;
+
+    typedef struct { 
+        UINT_PTR opaque[2];
+        uint32_t padding[4];
+    } INFCONTEXT;
+
+    typedef UINT (CALLBACK *PSP_FILE_CALLBACK_W)(void* Context, UINT Notification, UINT_PTR Param1, UINT_PTR Param2);
+
+    typedef struct _FILE_IN_CABINET_INFO_W {
+        PCWSTR NameInCabinet;
+        DWORD  FileSize;
+        DWORD  Win32Error;
+        WORD   DosDate;
+        WORD   DosTime;
+        WORD   DosAttribs;
+        WCHAR  FullTargetName[260];
+    } FILE_IN_CABINET_INFO_W, *PFILE_IN_CABINET_INFO_W;
 
     /* --- Constants --- */
     static const DWORD DIF_PROPERTYCHANGE = 0x00000012;
@@ -90,6 +108,14 @@ ffi.cdef [[
         PDWORD RequiredSize,
         PWSTR* DestinationInfFileNameComponent
     );
+
+    /* INF File APIs */
+    HINF SetupOpenInfFileW(PCWSTR FileName, PCWSTR InfClass, DWORD InfStyle, UINT* ErrorLine);
+    void SetupCloseInfFile(HINF InfHandle);
+    BOOL SetupFindFirstLineW(HINF InfHandle, PCWSTR Section, PCWSTR Key, PVOID Context);
+    BOOL SetupFindNextLine(PVOID Context, PVOID ContextOut);
+    BOOL SetupGetStringFieldW(PVOID Context, DWORD FieldIndex, PWSTR ReturnBuffer, DWORD ReturnBufferSize, PDWORD RequiredSize);
+    BOOL SetupIterateCabinetW(PCWSTR CabinetFile, DWORD Reserved, PSP_FILE_CALLBACK_W MsgHandler, void* Context);
 ]]
 
 return ffi.load("setupapi")

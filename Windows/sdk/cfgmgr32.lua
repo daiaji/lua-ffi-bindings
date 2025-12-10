@@ -2,6 +2,7 @@ local ffi = require 'ffi'
 require 'ffi.req' 'Windows.sdk.minwindef'
 
 ffi.cdef [[
+    typedef unsigned long PNP_VETO_TYPE;
     typedef DWORD CONFIGRET;
     typedef DWORD DEVINST;
     typedef DEVINST *PDEVINST; /* [FIX] Added pointer definition */
@@ -32,6 +33,8 @@ ffi.cdef [[
     CONFIGRET CM_Get_Parent(PDEVINST pdnDevInst, DEVINST dnDevInst, ULONG ulFlags);
     CONFIGRET CM_Get_Device_IDW(DEVINST dnDevInst, WCHAR* Buffer, ULONG BufferLen, ULONG ulFlags);
     CONFIGRET CM_Get_DevNode_Registry_PropertyW(DEVINST dnDevInst, ULONG ulProperty, PULONG pulRegDataType, PVOID Buffer, PULONG pulLength, ULONG ulFlags);
+    CONFIGRET CM_Get_DevNode_Status(PULONG pulStatus, PULONG pulProblemNumber, DWORD dnDevInst, ULONG ulFlags);
+    CONFIGRET CM_Request_Device_EjectW(DWORD dnDevInst, PNP_VETO_TYPE* pVetoType, WCHAR* pszVetoName, ULONG ulNameLength, ULONG ulFlags);
 ]]
 
 return ffi.load("cfgmgr32")

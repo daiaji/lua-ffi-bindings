@@ -40,8 +40,7 @@ ffi.cdef[[
     static const uint16_t COMPRESSION_FORMAT_DEFAULT = 0x0001;
     static const uint16_t COMPRESSION_FORMAT_LZNT1   = 0x0002;
 
-    /* ... [Include structs from original code: DISK_GEOMETRY, DRIVE_LAYOUT_INFORMATION_EX etc.] ... */
-    /* (Ensure all structs from previous context are retained here) */
+    /* Structures */
     typedef struct _DISK_GEOMETRY {
         LARGE_INTEGER Cylinders;
         int           MediaType;
@@ -181,6 +180,43 @@ ffi.cdef[[
         ULONG ConnectionIndex;
         ULONG StatusReturned;
     } USB_CYCLE_PORT_PARAMS;
+
+    /* Reparse Buffers */
+    typedef struct _REPARSE_DATA_BUFFER_HEADER {
+        ULONG  ReparseTag;
+        USHORT ReparseDataLength;
+        USHORT Reserved;
+    } REPARSE_DATA_BUFFER_HEADER;
+
+    typedef struct _SYMBOLIC_LINK_REPARSE_BUFFER {
+        ULONG  ReparseTag;
+        USHORT ReparseDataLength;
+        USHORT Reserved;
+        USHORT SubstituteNameOffset;
+        USHORT SubstituteNameLength;
+        USHORT PrintNameOffset;
+        USHORT PrintNameLength;
+        ULONG  Flags;
+        WCHAR  PathBuffer[1];
+    } SYMBOLIC_LINK_REPARSE_BUFFER;
+
+    typedef struct _MOUNT_POINT_REPARSE_BUFFER {
+        ULONG  ReparseTag;
+        USHORT ReparseDataLength;
+        USHORT Reserved;
+        USHORT SubstituteNameOffset;
+        USHORT SubstituteNameLength;
+        USHORT PrintNameOffset;
+        USHORT PrintNameLength;
+        WCHAR  PathBuffer[1];
+    } MOUNT_POINT_REPARSE_BUFFER;
+
+    /* Shrink Information */
+    typedef struct _SHRINK_VOLUME_INFORMATION {
+        int ShrinkRequestType; // 1=Prepare, 2=Commit, 3=Abort
+        long long Flags;
+        long long NewSize;
+    } SHRINK_VOLUME_INFORMATION;
 ]]
 
 return ffi.C
