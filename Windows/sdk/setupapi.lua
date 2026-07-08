@@ -50,7 +50,7 @@ ffi.cdef [[
         uint32_t padding[4];
     } INFCONTEXT;
 
-    typedef UINT (CALLBACK *PSP_FILE_CALLBACK_W)(void* Context, UINT Notification, UINT_PTR Param1, UINT_PTR Param2);
+    typedef UINT (__stdcall *PSP_FILE_CALLBACK_W)(void* Context, UINT Notification, UINT_PTR Param1, UINT_PTR Param2);
 
     typedef struct _FILE_IN_CABINET_INFO_W {
         PCWSTR NameInCabinet;
