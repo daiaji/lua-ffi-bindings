@@ -75,6 +75,7 @@ lookup'luajit'.Linux = '/usr/local/lib/libluajit.so'	-- why isn't this finding b
 
 lookup'GL'.Windows = 'OpenGL32'				-- builtin
 lookup'GLU'.Windows = 'GLU32'
+lookup'cimgui'.Windows = 'cimgui'
 
 -- TODO when building these on Windows, make sure their names don't have version crap on the end, so there's no need for this.
 -- can ffi.load"serial/hdf5" work? hmm...
