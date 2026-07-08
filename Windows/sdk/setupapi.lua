@@ -39,6 +39,12 @@ ffi.cdef [[
         DWORD HwProfile;
     } SP_PROPCHANGE_PARAMS, *PSP_PROPCHANGE_PARAMS;
 
+    typedef struct _SP_REMOVEDEVICE_PARAMS {
+        SP_CLASSINSTALL_HEADER ClassInstallHeader;
+        DWORD Scope;
+        DWORD HwProfile;
+    } SP_REMOVEDEVICE_PARAMS, *PSP_REMOVEDEVICE_PARAMS;
+
     typedef struct { 
         UINT_PTR opaque[2];
         uint32_t padding[4];
@@ -58,12 +64,15 @@ ffi.cdef [[
 
     /* --- Constants --- */
     static const DWORD DIF_PROPERTYCHANGE = 0x00000012;
+    static const DWORD DIF_REMOVE = 0x00000005;
     
     static const DWORD DICS_ENABLE  = 0x00000001;
     static const DWORD DICS_DISABLE = 0x00000002;
+    static const DWORD DICS_PROPCHANGE = 0x00000003;
     
     static const DWORD DICS_FLAG_GLOBAL         = 0x00000001;
     static const DWORD DICS_FLAG_CONFIGSPECIFIC = 0x00000002;
+    static const DWORD DI_REMOVEDEVICE_GLOBAL = 0x00000001;
 
     /* --- Device Enumeration APIs --- */
     HDEVINFO SetupDiGetClassDevsW(const GUID* ClassGuid, LPCWSTR Enumerator, HWND hwndParent, DWORD Flags);
@@ -78,6 +87,7 @@ ffi.cdef [[
     
     /* --- State Change APIs --- */
     BOOL SetupDiSetClassInstallParamsW(HDEVINFO DeviceInfoSet, PSP_DEVINFO_DATA DeviceInfoData, PSP_CLASSINSTALL_HEADER ClassInstallParams, DWORD ClassInstallParamsSize);
+    BOOL SetupDiCallClassInstaller(DWORD InstallFunction, HDEVINFO DeviceInfoSet, PSP_DEVINFO_DATA DeviceInfoData);
     BOOL SetupDiChangeState(HDEVINFO DeviceInfoSet, PSP_DEVINFO_DATA DeviceInfoData);
     BOOL SetupDiGetDeviceInstanceIdW(HDEVINFO DeviceInfoSet, PSP_DEVINFO_DATA DeviceInfoData, PWSTR DeviceInstanceId, DWORD DeviceInstanceIdSize, PDWORD RequiredSize);
 

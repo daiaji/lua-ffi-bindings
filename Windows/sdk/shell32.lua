@@ -24,6 +24,10 @@ ffi.cdef [[
     static const UINT FOF_NOCONFIRMMKDIR = 0x0200;
     static const UINT FOF_NOERRORUI = 0x0400;
 
+    static const DWORD SHERB_NOCONFIRMATION = 0x00000001;
+    static const DWORD SHERB_NOPROGRESSUI = 0x00000002;
+    static const DWORD SHERB_NOSOUND = 0x00000004;
+
     // Shell File Operations
     typedef struct _SHFILEOPSTRUCTW {
         HWND hwnd;
@@ -37,6 +41,15 @@ ffi.cdef [[
     } SHFILEOPSTRUCTW;
 
     int SHFileOperationW(SHFILEOPSTRUCTW* lpFileOp);
+
+    typedef struct _SHQUERYRBINFO {
+        DWORD cbSize;
+        int64_t i64Size;
+        int64_t i64NumItems;
+    } SHQUERYRBINFO, *LPSHQUERYRBINFO;
+
+    HRESULT SHEmptyRecycleBinW(HWND hwnd, LPCWSTR pszRootPath, DWORD dwFlags);
+    HRESULT SHQueryRecycleBinW(LPCWSTR pszRootPath, LPSHQUERYRBINFO pSHQueryRBInfo);
 
     /* --- [FIX] Moved from user32.lua (Correct DLL) --- */
     void SHChangeNotify(LONG wEventId, UINT uFlags, LPCVOID dwItem1, LPCVOID dwItem2);

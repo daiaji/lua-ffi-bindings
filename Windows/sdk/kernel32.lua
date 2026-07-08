@@ -281,6 +281,8 @@ LPWSTR GetCommandLineW(void);
 BOOL QueryFullProcessImageNameW(HANDLE hProcess, DWORD dwFlags, LPWSTR lpExeName, DWORD* lpdwSize);
 DWORD WTSGetActiveConsoleSessionId(void);
 UINT GetWindowsDirectoryW(LPWSTR lpBuffer, UINT uSize);
+BOOL GetComputerNameW(LPWSTR lpBuffer, DWORD* nSize);
+BOOL GetComputerNameExW(int NameType, LPWSTR lpBuffer, DWORD* nSize);
 BOOL GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode);
 
 /* Missing symbol */
@@ -302,6 +304,8 @@ BOOL FreeLibrary(HMODULE hLibModule);
 BOOL SetEnvironmentVariableW(LPCWSTR lpName, LPCWSTR lpValue);
 DWORD GetEnvironmentVariableW(LPCWSTR lpName, LPWSTR lpBuffer, DWORD nSize);
 DWORD ExpandEnvironmentStringsW(LPCWSTR lpSrc, LPWSTR lpDst, DWORD nSize);
+wchar_t* GetEnvironmentStringsW(void);
+BOOL FreeEnvironmentStringsW(wchar_t* lpszEnvironmentBlock);
 
 /* Event */
 HANDLE CreateEventW(void* lpEventAttributes, BOOL bManualReset, BOOL bInitialState, LPCWSTR lpName);
@@ -312,6 +316,7 @@ BOOL ResetEvent(HANDLE hEvent);
 /* Pipe */
 BOOL CreatePipe(PHANDLE hReadPipe, PHANDLE hWritePipe, LPSECURITY_ATTRIBUTES lpPipeAttributes, DWORD nSize);
 BOOL SetHandleInformation(HANDLE hObject, DWORD dwMask, DWORD dwFlags);
+BOOL PeekNamedPipe(HANDLE hNamedPipe, void* lpBuffer, DWORD nBufferSize, DWORD* lpBytesRead, DWORD* lpTotalBytesAvail, DWORD* lpBytesLeftThisMessage);
 
 /* File I/O */
 HANDLE CreateFileW(LPCWSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, void* lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
@@ -392,6 +397,10 @@ void SetLastError(DWORD dwErrCode);
 DWORD FormatMessageW(DWORD dwFlags, const void* lpSource, DWORD dwMessageId, DWORD dwLanguageId, LPWSTR lpBuffer, DWORD nSize, void* Arguments);
 
 void GetSystemTimeAsFileTime(FILETIME* lpSystemTimeAsFileTime);
+void GetSystemTime(SYSTEMTIME* lpSystemTime);
+void GetLocalTime(SYSTEMTIME* lpSystemTime);
+BOOL SetSystemTime(const SYSTEMTIME* lpSystemTime);
+BOOL SetLocalTime(const SYSTEMTIME* lpSystemTime);
 
 /* [ADDED] Firmware Environment */
 DWORD GetFirmwareEnvironmentVariableW(LPCWSTR lpName, LPCWSTR lpGuid, PVOID pBuffer, DWORD nSize);

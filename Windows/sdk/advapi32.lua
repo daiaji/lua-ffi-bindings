@@ -45,6 +45,9 @@ typedef enum _SID_NAME_USE {
     SidTypeLabel
 } SID_NAME_USE;
 
+typedef uintptr_t HCRYPTPROV;
+typedef uintptr_t HCRYPTHASH;
+
 /* Structures */
 /* LUID is in minwindef */
 
@@ -127,6 +130,30 @@ typedef enum _SE_OBJECT_TYPE {
     SE_REGISTRY_WOW64_32KEY
 } SE_OBJECT_TYPE;
 
+typedef enum {
+    NOT_USED_ACCESS = 0,
+    GRANT_ACCESS,
+    SET_ACCESS,
+    REVOKE_ACCESS,
+    SET_AUDIT_SUCCESS,
+    SET_AUDIT_FAILURE
+} ACCESS_MODE;
+
+typedef struct {
+    void*    pMultipleTrustee;
+    int      MultipleTrusteeOperation;
+    int      TrusteeForm;
+    int      TrusteeType;
+    wchar_t* ptstrName;
+} TRUSTEE_W;
+
+typedef struct {
+    DWORD       grfAccessPermissions;
+    ACCESS_MODE grfAccessMode;
+    DWORD       grfInheritance;
+    TRUSTEE_W   Trustee;
+} EXPLICIT_ACCESS_W;
+
 /* API Functions */
 /* Process Creation */
 BOOL CreateProcessAsUserW(HANDLE hToken, LPCWSTR lpApplicationName, LPWSTR lpCommandLine, void* lpProcessAttributes, void* lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, void* lpEnvironment, LPCWSTR lpCurrentDirectory, void* lpStartupInfo, void* lpProcessInformation);
@@ -136,6 +163,7 @@ BOOL DuplicateTokenEx(HANDLE hExistingToken, DWORD dwDesiredAccess, void* lpToke
 BOOL OpenProcessToken(HANDLE ProcessHandle, DWORD DesiredAccess, HANDLE *TokenHandle);
 BOOL LookupPrivilegeValueW(LPCWSTR lpSystemName, LPCWSTR lpName, LUID *lpLuid);
 BOOL AdjustTokenPrivileges(HANDLE TokenHandle, BOOL DisableAllPrivileges, TOKEN_PRIVILEGES *NewState, DWORD BufferLength, void *PreviousState, DWORD *ReturnLength);
+BOOL GetUserNameW(LPWSTR lpBuffer, DWORD* pcbBuffer);
 
 /* SID */
 BOOL ConvertSidToStringSidW(PSID Sid, LPWSTR* StringSid);
@@ -166,11 +194,21 @@ LONG RegQueryValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD* lpReserved, DWORD* 
 LONG RegSetValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData);
 LONG RegDeleteValueW(HKEY hKey, LPCWSTR lpValueName);
 LONG RegDeleteKeyW(HKEY hKey, LPCWSTR lpSubKey);
+LONG RegQueryInfoKeyW(HKEY hKey, LPWSTR lpClass, DWORD* lpcchClass, DWORD* lpReserved, DWORD* lpcSubKeys, DWORD* lpcbMaxSubKeyLen, DWORD* lpcbMaxClassLen, DWORD* lpcValues, DWORD* lpcbMaxValueNameLen, DWORD* lpcbMaxValueLen, DWORD* lpcbSecurityDescriptor, FILETIME* lpftLastWriteTime);
 LONG RegEnumKeyExW(HKEY hKey, DWORD dwIndex, LPWSTR lpName, DWORD* lpcchName, DWORD* lpReserved, LPWSTR lpClass, DWORD* lpcchClass, FILETIME* lpftLastWriteTime);
+LONG RegEnumValueW(HKEY hKey, DWORD dwIndex, LPWSTR lpValueName, DWORD* lpcchValueName, DWORD* lpReserved, DWORD* lpType, BYTE* lpData, DWORD* lpcbData);
 
 /* [ADDED] Missing Symbols */
 LONG RegDeleteTreeW(HKEY hKey, LPCWSTR lpSubKey);
 BOOL ConvertStringSidToSidW(LPCWSTR StringSid, PSID* Sid);
+
+/* CryptoAPI */
+BOOL CryptAcquireContextW(HCRYPTPROV* phProv, LPCWSTR pszContainer, LPCWSTR pszProvider, DWORD dwProvType, DWORD dwFlags);
+BOOL CryptCreateHash(HCRYPTPROV hProv, DWORD Algid, HCRYPTPROV hKey, DWORD dwFlags, HCRYPTHASH* phHash);
+BOOL CryptHashData(HCRYPTHASH hHash, const BYTE* pbData, DWORD dwDataLen, DWORD dwFlags);
+BOOL CryptGetHashParam(HCRYPTHASH hHash, DWORD dwParam, BYTE* pbData, DWORD* pdwDataLen, DWORD dwFlags);
+BOOL CryptDestroyHash(HCRYPTHASH hHash);
+BOOL CryptReleaseContext(HCRYPTPROV hProv, DWORD dwFlags);
 
 /* [NEW] ACL / Security */
 DWORD SetNamedSecurityInfoW(
@@ -182,6 +220,8 @@ DWORD SetNamedSecurityInfoW(
     PSECURITY_DESCRIPTOR pDacl,
     PSECURITY_DESCRIPTOR pSacl
 );
+DWORD SetEntriesInAclW(ULONG cCountOfExplicitEntries, EXPLICIT_ACCESS_W* pListOfExplicitEntries, void* OldAcl, void** NewAcl);
+DWORD GetNamedSecurityInfoW(LPCWSTR pObjectName, int ObjectType, DWORD SecurityInfo, void** ppsidOwner, void** ppsidGroup, void** ppDacl, void** ppSacl, void** ppSecurityDescriptor);
 ]]
 
 return ffi.load("advapi32")

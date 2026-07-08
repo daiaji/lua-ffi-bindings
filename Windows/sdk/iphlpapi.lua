@@ -110,6 +110,15 @@ ffi.cdef [[
         SOCKET_ADDRESS Address;
     } IP_ADAPTER_GATEWAY_ADDRESS;
 
+    typedef struct _IP_ADAPTER_DNS_SERVER_ADDRESS {
+        union {
+            ULONGLONG Alignment;
+            struct { ULONG Length; DWORD Reserved; };
+        };
+        struct _IP_ADAPTER_DNS_SERVER_ADDRESS* Next;
+        SOCKET_ADDRESS Address;
+    } IP_ADAPTER_DNS_SERVER_ADDRESS;
+
     typedef struct _IP_ADAPTER_ADDRESSES {
         union {
             ULONGLONG Alignment;
@@ -120,7 +129,7 @@ ffi.cdef [[
         IP_ADAPTER_UNICAST_ADDRESS* FirstUnicastAddress;
         void* FirstAnycastAddress;
         void* FirstMulticastAddress;
-        void* FirstDnsServerAddress;
+        IP_ADAPTER_DNS_SERVER_ADDRESS* FirstDnsServerAddress;
         PWCHAR DnsSuffix;
         PWCHAR Description;
         PWCHAR FriendlyName;
