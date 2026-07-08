@@ -47,12 +47,58 @@ ffi.cdef [[
     BOOL EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam);
     DWORD GetWindowThreadProcessId(HWND hWnd, DWORD* lpdwProcessId);
     BOOL IsWindowVisible(HWND hWnd);
+    int GetWindowTextLengthW(HWND hWnd);
+    int GetWindowTextW(HWND hWnd, LPWSTR lpString, int nMaxCount);
+    int GetClassNameW(HWND hWnd, LPWSTR lpClassName, int nMaxCount);
+    BOOL IsWindow(HWND hWnd);
+    BOOL ShowWindow(HWND hWnd, int nCmdShow);
+    BOOL SetForegroundWindow(HWND hWnd);
+    BOOL SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags);
+    BOOL MoveWindow(HWND hWnd, int X, int Y, int nWidth, int nHeight, BOOL bRepaint);
     BOOL PostMessageW(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
     static const UINT WM_CLOSE = 0x0010;
 
     /* Keyboard / Hotkeys */
     short VkKeyScanW(WCHAR ch);
+    void keybd_event(BYTE bVk, BYTE bScan, DWORD dwFlags, ULONG_PTR dwExtraInfo);
+    void mouse_event(DWORD dwFlags, DWORD dx, DWORD dy, DWORD dwData, ULONG_PTR dwExtraInfo);
+    short GetKeyState(int nVirtKey);
+    UINT MapVirtualKeyW(UINT uCode, UINT uMapType);
+
+    typedef struct tagKEYBDINPUT {
+        WORD wVk;
+        WORD wScan;
+        DWORD dwFlags;
+        DWORD time;
+        ULONG_PTR dwExtraInfo;
+    } KEYBDINPUT;
+
+    typedef struct tagMOUSEINPUT {
+        LONG dx;
+        LONG dy;
+        DWORD mouseData;
+        DWORD dwFlags;
+        DWORD time;
+        ULONG_PTR dwExtraInfo;
+    } MOUSEINPUT;
+
+    typedef struct tagHARDWAREINPUT {
+        DWORD uMsg;
+        WORD wParamL;
+        WORD wParamH;
+    } HARDWAREINPUT;
+
+    typedef struct tagINPUT {
+        DWORD type;
+        union {
+            MOUSEINPUT mi;
+            KEYBDINPUT ki;
+            HARDWAREINPUT hi;
+        } DUMMYUNIONNAME;
+    } INPUT;
+
+    UINT SendInput(UINT cInputs, INPUT* pInputs, int cbSize);
 
     /* Global Hotkeys */
     BOOL RegisterHotKey(HWND hWnd, int id, UINT fsModifiers, UINT vk);

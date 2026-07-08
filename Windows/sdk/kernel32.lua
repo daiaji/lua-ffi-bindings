@@ -246,6 +246,15 @@ typedef struct _MEMORYSTATUSEX {
     uint64_t ullAvailExtendedVirtual;
 } MEMORYSTATUSEX;
 
+typedef struct _SYSTEM_POWER_STATUS {
+    BYTE ACLineStatus;
+    BYTE BatteryFlag;
+    BYTE BatteryLifePercent;
+    BYTE SystemStatusFlag;
+    DWORD BatteryLifeTime;
+    DWORD BatteryFullLifeTime;
+} SYSTEM_POWER_STATUS;
+
 /* --- API Functions --- */
 BOOL CloseHandle(HANDLE hObject);
 
@@ -370,6 +379,7 @@ HLOCAL LocalFree(HLOCAL hMem);
 LPVOID VirtualAlloc(LPVOID lpAddress, SIZE_T dwSize, DWORD flAllocationType, DWORD flProtect);
 BOOL VirtualFree(LPVOID lpAddress, SIZE_T dwSize, DWORD dwFreeType);
 BOOL GlobalMemoryStatusEx(MEMORYSTATUSEX* lpBuffer);
+BOOL GetSystemPowerStatus(SYSTEM_POWER_STATUS* lpSystemPowerStatus);
 
 /* String */
 int WideCharToMultiByte(unsigned int CodePage, DWORD dwFlags, LPCWSTR lpWideCharStr, int cchWideChar, LPSTR lpMultiByteStr, int cbMultiByte, LPCSTR lpDefaultChar, int* lpUsedDefaultChar);
